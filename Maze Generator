@@ -17,8 +17,8 @@ class Maze:
             for j in range(self.width):
                 emptylist.append([1,1,1,1]) # [bottom, left, top, right]
     
-    # UNTESTED (CURRENT SUSPECT)
-    def generateMaze(self, visited = 0, currPos = (0,0), pastDirection = None):
+    # Wrongly accused victim
+    def generateMaze(self, visited = 0, currPos = (0,0)):
         directionList = [(1,0),(0,-1),(-1,0),(0,1)]
         rows, cols = len(self.list), len(self.list[0])
         if(visited == self.height * self.width):
@@ -26,7 +26,8 @@ class Maze:
         else:
             direction = random.randint(0,3) # 0-3: bottom, left, top, right
             drow, dcol = directionList[direction]
-            while(not self.isValid(currPos,drow,dcol, pastDirection)):
+            notValid = set()
+            while(not self.isValid(currPos,drow,dcol)):
                 notValid.add(direction)
                 direction = random.randint(0,3) # 0-3: bottom, left, top, right
                 drow, dcol = directionList[direction]
@@ -37,6 +38,7 @@ class Maze:
             currRow, currCol = currPos
             self.list[currRow][currCol][direction] = 0
             visited += 1
+            #print(visited)
             currRow += drow
             currCol += dcol
             currPos = (currCol, currRow)
@@ -45,23 +47,23 @@ class Maze:
             else:
                 newDirection = direction + 2
             self.list[currRow][currCol][newDirection] = 0
-            return self.generateMaze(visited, currPos, newDirection)
+            return self.generateMaze(visited, currPos)
         
-    # SUSPECTED CRIMINAL
-    def isValid(self, currPos, drow, dcol, pastDirection):
-        goal = [1,1,1,1]
-        if pastDirection != None:
-            goal[pastDirection] = 0
+    # good to go
+    def isValid(self, currPos, drow, dcol):
+        # goal = [1,1,1,1]
+        # if pastDirection != None:
+        #     goal[pastDirection] = 0
         row, col = currPos
         row += drow
         col += dcol
         if((0 <= row < len(self.list)) and 
-          (0 <= col < len(self.list[0])) and
-          (self.list[row][col] == goal)):
-          return True
+          (0 <= col < len(self.list[0]))):
+          if(self.list[row][col].count(0) <= 1):
+            return True
         return False
     
-    # WORKS
+    # FUCKING SPY
     def newPositionInMaze(self):
         rows, cols = len(self.list), len(self.list[0])
         for row in range(rows):
