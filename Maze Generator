@@ -21,39 +21,41 @@ class Maze:
     def generateMaze(self, visited = 0, currPos = (0,0)):
         directionList = [(1,0),(0,-1),(-1,0),(0,1)]
         rows, cols = len(self.list), len(self.list[0])
+        seen = set()
         if(visited == self.height * self.width):
-            return None
+            return 'done'
         else:
-            direction = random.randint(0,3) # 0-3: bottom, left, top, right
-            drow, dcol = directionList[direction]
-            notValid = set()
-            while(not self.isValid(currPos,drow,dcol)):
-                notValid.add(direction)
+            while seen != set([0,1,2,3]):
                 direction = random.randint(0,3) # 0-3: bottom, left, top, right
+                while direction in seen: #always gets a new direction
+                    direction = random.randint(0,3)
+                seen.add(direction)
                 drow, dcol = directionList[direction]
-                if(notValid == set(range(0,4))):
-                    currPos = self.newPositionInMaze()
-                    notValid = set()
-                    pastDirection = None
-            currRow, currCol = currPos
-            self.list[currRow][currCol][direction] = 0
-            visited += 1
-            #print(visited)
-            currRow += drow
-            currCol += dcol
-            currPos = (currCol, currRow)
-            if(direction > 1):
-                newDirection = direction-2
-            else:
-                newDirection = direction + 2
-            self.list[currRow][currCol][newDirection] = 0
-            return self.generateMaze(visited, currPos)
+                if(self.isValid(currPos,drow,dcol)): #validity check
+                    #make moves below
+                    currRow, currCol = currPos
+                    self.list[currRow][currCol][direction] = 0
+                    visited += 1
+                    currRow += drow
+                    currCol += dcol
+                    currPos = (currRow, currCol)
+                    if(direction > 1):
+                        newDirection = direction-2
+                    else:
+                        newDirection = direction + 2
+                    self.list[currRow][currCol][newDirection] = 0
+                    result = self.generateMaze(visited,currPos)
+                    if(result != None):
+                        return result
+                    visited -= 1
+                    self.list[currRow][currCol][newDirection] = 1
+                    currRow -= drow
+                    currCol -= dcol
+                    currPos = (currRow, currCol)
+            return None
         
     # good to go
     def isValid(self, currPos, drow, dcol):
-        # goal = [1,1,1,1]
-        # if pastDirection != None:
-        #     goal[pastDirection] = 0
         row, col = currPos
         row += drow
         col += dcol
@@ -63,15 +65,6 @@ class Maze:
             return True
         return False
     
-    # FUCKING SPY
-    def newPositionInMaze(self):
-        rows, cols = len(self.list), len(self.list[0])
-        for row in range(rows):
-            for col in range(cols):
-                if(self.list[row][col] == [1,1,1,1]):
-                    return ((row,col))
-
-
     def __repr__(self):
         return f'{self.list}'
 
