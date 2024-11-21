@@ -4,13 +4,22 @@ from Other_Maze import Maze
 
 
 def onAppStart(app):
-    app.maze = Maze(5,5)
+    app.width = 800
+    app.height = 800
+    app.rows = 5
+    app.cols = 5
+    app.maze = Maze(app.rows,app.cols)
     app.maze.generateList()
     app.maze.generateMaze()
-    pass
+    print(app.maze.list)
+
 
 def redrawAll(app):
-    pass
+    for row in range(app.rows):
+        for col in range(app.cols):
+            if(app.maze.list[row][col][2] == 1):
+                drawLine(50 + (100*row),50 + (100*col),
+                     150 + (100*row),50 + (100*col))
 
 def main():
     runApp()

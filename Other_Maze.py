@@ -76,3 +76,7 @@ class Maze:
     def __repr__(self):
         return f'{self.list}'
 
+
+y = Maze(5,5)
+y.generateList()
+y.generateMaze()
