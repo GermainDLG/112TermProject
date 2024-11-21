@@ -1,0 +1,18 @@
+from cmu_graphics import *
+from Other_Maze import Maze
+
+
+
+def onAppStart(app):
+    app.maze = Maze(5,5)
+    app.maze.generateList()
+    app.maze.generateMaze()
+    pass
+
+def redrawAll(app):
+    pass
+
+def main():
+    runApp()
+
+main()
