@@ -1,5 +1,5 @@
 from cmu_graphics import *
-from Other_Maze import Maze
+from Other_Maze import *
 
 
 
@@ -8,18 +8,79 @@ def onAppStart(app):
     app.height = 800
     app.rows = 5
     app.cols = 5
-    app.maze = Maze(app.rows,app.cols)
-    app.maze.generateList()
-    app.maze.generateMaze()
-    print(app.maze.list)
+    app.maze2 = Maze(app.rows,app.cols)
+    app.maze1 = Maze(app.rows,app.cols)
+    app.maze3 = Maze(app.rows,app.cols)
+    app.maze4 = Maze(app.rows,app.cols)
+    app.maze5 = Maze(app.rows,app.cols)
+    app.maze6 = Maze(app.rows,app.cols)
+    app.maze2.generateList()
+    app.maze2.generateMaze()
+    mazeSetup(app.maze2)
+    mazeSetup(app.maze1)
+    app.maze1.generateList()
+    app.maze1.generateMaze()
+    mazeSetup(app.maze3)
+    mazeSetup(app.maze4)
+    mazeSetup(app.maze5)
+    mazeSetup(app.maze6)
+    app.maze1.surrounding = [app.maze3, app.maze2, app.maze6, app.maze4]
+    app.maze2.surrounding = [app.maze5, app.maze6, app.maze1, app.maze3]
+    app.maze3.surrounding = [app.maze5, app.maze2, app.maze1, app.maze4]
+    app.maze4.surrounding = [app.maze5, app.maze3, app.maze1, app.maze6]
+    app.maze5.surrounding = [app.maze6, app.maze2, app.maze3, app.maze4]
+    app.maze6.surrounding = [app.maze5, app.maze4, app.maze1, app.maze2]
+    app.currMaze = app.maze1
+    app.mazeRotation = 0
+    app.pastMove = ''
+    print(app.maze2)
 
 
-def redrawAll(app):
+    
+def mazeSetup(maze):
+    pass
+
+def drawMaze(app, maze):
     for row in range(app.rows):
         for col in range(app.cols):
-            if(app.maze.list[row][col][2] == 1):
-                drawLine(50 + (100*row),50 + (100*col),
-                     150 + (100*row),50 + (100*col))
+            if(maze.list[row][col][2] == 1):
+                drawLine(50 + (100*col),50 + (100*row),
+                        150 + (100*col),50 + (100*row))
+            if(maze.list[row][col][1] == 1):
+                drawLine(50 + (100*col),50 + (100*row),
+                        50 + (100*col),150 + (100*row))
+            if(maze.list[row][col][0] == 1):
+                drawLine(50 + (100*col), 150 + (100*row),
+                         150 + (100*col), 150 + (100*row))
+            if(maze.list[row][col][3] == 1):
+                drawLine(150 + (100*col), 50 + (100*row),
+                         150 + (100*col), 150 + (100*row))
+
+def redrawAll(app):
+    drawMaze(app, app.currMaze)
+
+def onKeyPress(app, key):
+    pastMaze = app.currMaze
+    if(key == 'left'):
+        app.currMaze = pastMaze.surrounding[1]
+        if(app.pastMove == 'up'):
+            app.currMaze.surrounding.insert(0,app.currMaze.surrounding.pop(-1))
+        elif(app.pastMove == 'down'):
+            app.currMaze.surrounding.append(app.currMaze.pop(0))
+        app.pastMove = 'left'
+    elif(key == 'up'):
+        app.currMaze = pastMaze.surrounding[2]
+        app.pastMove = 'up'
+    elif(key == 'down'):
+        app.currMaze = pastMaze.surrounding[0]
+        app.pastMove = 'down'
+    elif(key == 'right'):
+        app.currMaze = pastMaze.surrounding[3]
+        if(app.pastMove == 'up'):
+            app.currMaze.surrounding.append(app.currMaze.pop(0))
+        elif(app.pastMove == 'down'):
+            app.currMaze.surrounding.insert(0,app.currMaze.surrounding.pop(-1))
+        app.pastMove = 'right'
 
 def main():
     runApp()

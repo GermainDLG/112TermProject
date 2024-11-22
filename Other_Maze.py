@@ -9,6 +9,7 @@ class Maze:
         self.height = height
         self.width = width
         self.list = []
+        self.surrounding = []
     
     def generateList(self):
         for i in range(self.height):
@@ -76,7 +77,3 @@ class Maze:
     def __repr__(self):
         return f'{self.list}'
 
-
-y = Maze(5,5)
-y.generateList()
-y.generateMaze()
