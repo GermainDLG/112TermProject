@@ -43,6 +43,7 @@ class Maze:
                         newMove = moveIndex - 2
                     currPos = (currRow, currCol)
                     self.list[currRow][currCol][newMove] = 0
+
                     rest = self.generateMaze(visited, currPos)
                     if rest != None:
                         return rest
@@ -76,4 +77,7 @@ class Maze:
 
     def __repr__(self):
         return f'{self.list}'
+    
+    def __eq__(self,other):
+        return(isinstance(other, Maze) and self.list == other.list)
 
