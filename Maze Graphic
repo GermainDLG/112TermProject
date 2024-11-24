@@ -4,8 +4,8 @@ from Other_Maze import *
 
 
 def onAppStart(app):
-    app.width = 800
-    app.height = 800
+    app.width = 600
+    app.height = 600
     app.rows = 5
     app.cols = 5
     app.maze1 = Maze(app.rows,app.cols)
@@ -21,15 +21,30 @@ def onAppStart(app):
     mazeSetup(app.maze5)
     mazeSetup(app.maze6)
     app.maze1.surrounding = [app.maze3, app.maze2, app.maze6, app.maze4]
-    app.maze2.surrounding = [app.maze5, app.maze6, app.maze1, app.maze3]
+    app.maze2.surrounding = [app.maze3, app.maze5, app.maze6, app.maze1]
     app.maze3.surrounding = [app.maze5, app.maze2, app.maze1, app.maze4]
-    app.maze4.surrounding = [app.maze5, app.maze3, app.maze1, app.maze6]
-    app.maze5.surrounding = [app.maze6, app.maze2, app.maze3, app.maze4]
-    app.maze6.surrounding = [app.maze5, app.maze4, app.maze1, app.maze2]
+    app.maze4.surrounding = [app.maze3, app.maze1, app.maze6, app.maze5]
+    app.maze5.surrounding = [app.maze3, app.maze4, app.maze6, app.maze2]
+    app.maze6.surrounding = [app.maze1, app.maze2, app.maze5, app.maze4]
+    app.mazeList = [app.maze1, app.maze2, app.maze3, app.maze4, app.maze5, app.maze6]
     app.currMaze = app.maze1
-    app.pastMove = ''
-    print(app.maze2)
+    app.rotationCounter = 0
+    app.rotated = 0
+    app.mazeFace = '1'
 
+def testFunction(app):
+    if app.currMaze == app.maze1:
+        app.mazeFace = '1'
+    elif app.currMaze == app.maze2:
+        app.mazeFace = '2'
+    elif app.currMaze == app.maze3:
+        app.mazeFace = '3'
+    elif app.currMaze == app.maze4:
+        app.mazeFace = '4'
+    elif app.currMaze == app.maze5:
+        app.mazeFace = '5'
+    elif app.currMaze == app.maze6:
+        app.mazeFace = '6'
 
     
 def mazeSetup(maze):
@@ -54,29 +69,44 @@ def drawMaze(app, maze):
 
 def redrawAll(app):
     drawMaze(app, app.currMaze)
+    drawLabel(app.mazeFace,300,575)
 
 def onKeyPress(app, key):
     pastMaze = app.currMaze
     if(key == 'left'):
         app.currMaze = pastMaze.surrounding[1]
-        if(app.pastMove == 'up'):
-            app.currMaze.surrounding.insert(0,app.currMaze.surrounding.pop(-1))
-        elif(app.pastMove == 'down'):
-            app.currMaze.surrounding.append(app.currMaze.surrounding.pop(0))
+        app.rotated += app.rotationCounter
+        for __ in range(abs(app.rotationCounter)):
+            for maze in app.mazeList:
+                if app.rotationCounter < 0:
+                    maze.surrounding.append(maze.surrounding.pop(0))
+                elif app.rotationCounter > 0:
+                    maze.surrounding.insert(0,maze.surrounding.pop(-1))
+        app.rotationCounter = 0
         app.pastMove = 'left'
     elif(key == 'up'):
         app.currMaze = pastMaze.surrounding[2]
         app.pastMove = 'up'
+        #doesnt always increase rotation when going up (up-left vs up-right)
+        #same with going down
+        app.rotationCounter += 1
     elif(key == 'down'):
         app.currMaze = pastMaze.surrounding[0]
+        app.rotationCounter -= 1
         app.pastMove = 'down'
     elif(key == 'right'):
         app.currMaze = pastMaze.surrounding[3]
-        if(app.pastMove == 'up'):
-            app.currMaze.surrounding.append(app.currMaze.surrounding.pop(0))
-        elif(app.pastMove == 'down'):
-            app.currMaze.surrounding.insert(0,app.currMaze.surrounding.pop(-1))
+        app.rotated += app.rotationCounter
+        for __ in range(abs(app.rotationCounter)):
+            for maze in app.mazeList:
+                if app.rotationCounter < 0:
+                    maze.surrounding.insert(0,maze.surrounding.pop(-1))
+                elif app.rotationCounter > 0:
+                    maze.surrounding.append(maze.surrounding.pop(0))
+        app.rotationCounter = 0
         app.pastMove = 'right'
+    print(app.rotated)
+    testFunction(app)
 
 def main():
     runApp()

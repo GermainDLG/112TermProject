@@ -5,13 +5,5 @@ from Other_Maze import Maze
 
 #     SANDBOX FOR TESTING
 
-maze1 = Maze(5,5)
-maze1.generateList()
-maze1.generateMaze()
-print(maze1)
-
-maze2 = Maze(5,5)
-maze2.generateList()
-maze2.generateMaze(set(),(0,0))
-print(maze2)
-
+for i in range(-2):
+    print('h')
