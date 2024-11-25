@@ -50,7 +50,6 @@ def onKeyPress(app, key):
         if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][3] == 0):
             app.playerLocation[1] += 1
 
-
 def redrawAll(app):
     drawMaze(app, app.maze)
     playerCoords = getCenter(app)

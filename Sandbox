@@ -5,5 +5,59 @@ from Other_Maze import Maze
 
 #     SANDBOX FOR TESTING
 
-for i in range(-2):
-    print('h')
+a = [1,2,3,4,5]
+b = [2,3,4,5,6]
+c = [3,4,5,6,7]
+
+print(a.count(1))
+# ON KEY PRESS STORAGE:
+
+    # if(key == 'left'):
+    #     app.currMaze = pastMaze.surrounding[1]
+    #     for __ in range(abs(app.rotationCounter)):
+    #         for maze in app.mazeList:
+    #             if app.rotationCounter < 0:
+    #                 maze.surrounding.append(maze.surrounding.pop(0))                    
+    #             elif app.rotationCounter > 0:
+    #                 maze.surrounding.insert(0,maze.surrounding.pop(-1))
+    #     if 'right' in app.pastMove:
+    #         for chunk in app.pastMove.split(' '):
+    #             if chunk != 'right':
+    #                 chunk = int(chunk)
+    #                 for ___ in range(abs(chunk)):
+    #                     for maze in app.mazeList:
+    #                         if chunk < 0:
+    #                             maze.surrounding.append(maze.surrounding.pop(0))
+    #                         elif chunk > 0:
+    #                             maze.surrounding.insert(0,maze.surrounding.pop(-1))
+    #     app.pastMove = f'left {app.rotationCounter}'
+    #     app.rotationCounter = 0
+    # elif(key == 'up'):
+    #     app.currMaze = pastMaze.surrounding[2]
+    #     app.pastMove = 'up'
+    #     app.rotationCounter += 1
+    # elif(key == 'down'):
+    #     app.currMaze = pastMaze.surrounding[0]
+    #     app.rotationCounter -= 1
+    #     app.pastMove = 'down'
+    # elif(key == 'right'):
+    #     app.currMaze = pastMaze.surrounding[3]
+    #     for __ in range(abs(app.rotationCounter)):
+    #         for maze in app.mazeList:
+    #             if app.rotationCounter < 0:
+    #                 maze.surrounding.insert(0,maze.surrounding.pop(-1))
+    #             elif app.rotationCounter > 0:
+    #                 maze.surrounding.append(maze.surrounding.pop(0))
+    #     if 'left' in app.pastMove:
+    #         print('here')
+    #         for chunk in app.pastMove.split(' '):
+    #             if chunk != "left":
+    #                 chunk = int(chunk)
+    #                 for ___ in range(abs(chunk)):
+    #                     for maze in app.mazeList:
+    #                         if chunk < 0:
+    #                             maze.surrounding.insert(0,maze.surrounding.pop(-1))
+    #                         elif chunk > 0:
+    #                             maze.surrounding.append(maze.surrounding.pop(0))
+    #     app.pastMove = f'right {app.rotationCounter}'
+    #     app.rotationCounter = 0

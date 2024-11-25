@@ -38,7 +38,6 @@ def onKeyPress(app, key):
     elif(key == 's'):
         app.vertCounter -= 1
 
-
 def redrawAll(app):
     drawRect(150,250,400,400,fill=app.horizontalFaces[app.horizCounter%4],border='black')
     drawPolygon(150,250,550,250,650,150,250,150,fill=app.topFaceFill,border='black')

@@ -54,8 +54,6 @@ class Maze:
                     currPos = (currRow, currCol)
             return None
                     
-
-            
     def getPossibleDirections(self, currPos,visited):
         directionList = [(1,0),(0,-1),(-1,0),(0,1)]
         directionsIndex = []
@@ -80,4 +78,3 @@ class Maze:
     
     def __eq__(self,other):
         return(isinstance(other, Maze) and self.list == other.list)
-
