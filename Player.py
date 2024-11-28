@@ -12,8 +12,9 @@ def onAppStart(app):
     app.cols = 5
     app.maze = Maze(app.rows,app.cols)
     app.maze.generateList()
-    app.maze.generateMaze(set(),(0,0))
+    app.maze.generateMaze([],(0,0))
     print(app.maze)
+    app.screen = 'start' #start, game, controls
 
 def drawMaze(app, maze):
     for row in range(app.rows):
@@ -37,24 +38,60 @@ def getCenter(app):
     return(center)
 
 def onKeyPress(app, key):
-    if (key == 'w'):
-        if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][2] == 0):
-            app.playerLocation[0] -= 1
-    elif (key == 'a'):
-        if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][1] == 0):
-            app.playerLocation[1] -= 1
-    elif (key == 's'):
-        if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][0] == 0):
-            app.playerLocation[0] += 1
-    elif (key == 'd'):
-        if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][3] == 0):
-            app.playerLocation[1] += 1
+    if app.screen == 'game':
+        if (key == 'w'):
+            if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][2] == 0):
+                app.playerLocation[0] -= 1
+        elif (key == 'a'):
+            if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][1] == 0):
+                app.playerLocation[1] -= 1
+        elif (key == 's'):
+            if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][0] == 0):
+                app.playerLocation[0] += 1
+        elif (key == 'd'):
+            if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][3] == 0):
+                app.playerLocation[1] += 1
 
-def redrawAll(app):
-    drawMaze(app, app.maze)
-    playerCoords = getCenter(app)
-    drawCircle(*playerCoords,15)
-    #drawCircle()
+def onMousePress(app, mouseX, mouseY):
+    if app.screen == 'start':
+        if (inStartBounds(app,mouseX,mouseY) == True):
+            app.screen = 'game'
+        elif (inControlsBounds(app,mouseX,mouseY) == True):
+            app.screen = 'controls'
+    elif app.screen == 'controls':
+        if (inBackBounds(app,mouseX,mouseY) == True):
+            app.screen = 'start'
+    elif app.screen == 'game':
+        if(0 <= mouseX <= 50) and (0 <= mouseY <= 50):
+            app.screen = 'start'
+
+def inBackBounds(app, mouseX, mouseY):
+    return(200 <= mouseX <= 400) and (500 <= mouseY <= 550)
+
+def inStartBounds(app, mouseX, mouseY):
+    return(150 <= mouseX <= 450) and (250 <= mouseY <= 325)
+
+def inControlsBounds(app, mouseX, mouseY):
+    return (175 <= mouseX <= 425) and (350 <= mouseY <= 425)
+
+def redrawAll(app): 
+    if app.screen == 'start':
+        #drawRect(100,100,400,100)
+        drawLabel('Cat and Mouse',300,100,size = 60)
+        drawLabel('Around the World',300,155,size = 35)
+        drawRect(150,250,300,75, fill = None, border = 'black')
+        drawLabel('Start',300,287, size = 30)
+        drawRect(175,350,250,75, fill = None, border = 'black')
+        drawLabel('Controls',300,387, size = 20)
+
+    elif app.screen == 'game':
+        drawMaze(app, app.maze)
+        playerCoords = getCenter(app)
+        drawCircle(*playerCoords,15,fill='green')
+    
+    elif app.screen == 'controls':
+        drawRect(200,500,200,50,fill=None,border = 'black')
+        drawLabel('Back',300,525,size=20)
 
 def main():
     runApp()

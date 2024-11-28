@@ -18,40 +18,46 @@ class Maze:
             for j in range(self.width):
                 emptylist.append([1,1,1,1]) # [bottom, left, top, right]
     
-    def generateMaze(self, visited = set(), currPos = (0,0)):
+    def generateMaze(self, visited = [], currPos = (0,0)):
         directionList = [(1,0),(0,-1),(-1,0),(0,1)]
-        if(len(visited) == self.height * self.width):
+        directionsIndex = [1]
+        if(len(set(visited)) == self.height * self.width):
             return 'done'
         else:
-            directionsIndex = self.getPossibleDirections(currPos,visited)
-            temp = set()
-            while temp != set(directionsIndex):
+            while directionsIndex != []:
+                directionsIndex = self.getPossibleDirections(currPos,visited)
+                if directionsIndex == []:
+                    return None
                 i = random.randint(0,len(directionsIndex)-1)
                 moveIndex = directionsIndex[i]
-                if moveIndex not in temp:
-                    temp.add(moveIndex)
-                    visited.add(currPos)
-                    move = directionList[moveIndex]
-                    drow, dcol = move
-                    currRow, currCol = currPos
-                    self.list[currRow][currCol][moveIndex] = 0
-                    currRow += drow
-                    currCol += dcol
-                    if moveIndex < 2:
-                        newMove = moveIndex + 2
-                    else:
-                        newMove = moveIndex - 2
-                    currPos = (currRow, currCol)
-                    self.list[currRow][currCol][newMove] = 0
+                visited.append(currPos)
+                print(f'currPos: {currPos}')
+                print(f'visited {visited}')
+                print(f'directionsIndex: {directionsIndex}')
+                directionsIndex.pop(i)
+                move = directionList[moveIndex]
+                drow, dcol = move
+                currRow, currCol = currPos
+                self.list[currRow][currCol][moveIndex] = 0
+                print(f'knocked down {currRow, currCol, moveIndex}')
+                currRow += drow
+                currCol += dcol
+                if moveIndex < 2:
+                    newMove = moveIndex + 2
+                else:
+                    newMove = moveIndex - 2
+                currPos = (currRow, currCol)
+                self.list[currRow][currCol][newMove] = 0
 
-                    rest = self.generateMaze(visited, currPos)
-                    if rest != None:
-                        return rest
-                    visited.add(currPos)
-                    #self.list[currRow][currCol][newMove] = 1
-                    currRow -= drow
-                    currCol -= dcol
-                    currPos = (currRow, currCol)
+                rest = self.generateMaze(visited, currPos)
+                if rest != None:
+                    return rest
+                visited.append(currPos)
+                #self.list[currRow][currCol][newMove] = 1
+                currRow -= drow
+                currCol -= dcol
+                currPos = (currRow, currCol)
+                print(f'backtrack to {currRow, currCol}')
             return None
                     
     def getPossibleDirections(self, currPos,visited):
@@ -78,3 +84,45 @@ class Maze:
     
     def __eq__(self,other):
         return(isinstance(other, Maze) and self.list == other.list)
+
+
+
+        # directionList = [(1,0),(0,-1),(-1,0),(0,1)]
+        # if(len(visited) == self.height * self.width):
+        #     return 'done'
+        # else:
+        #     directionsIndex = self.getPossibleDirections(currPos,visited)
+        #     temp = set()
+        #     while temp != set(directionsIndex):
+        #         i = random.randint(0,len(directionsIndex)-1)
+        #         moveIndex = directionsIndex[i]
+        #         if moveIndex not in temp:
+        #             temp.add(moveIndex)
+        #             visited.add(currPos)
+        #             print(f'currPos: {currPos}')
+        #             print(f'visited {visited}')
+        #             print(f'directionsIndex: {directionsIndex}')
+        #             move = directionList[moveIndex]
+        #             drow, dcol = move
+        #             currRow, currCol = currPos
+        #             self.list[currRow][currCol][moveIndex] = 0
+        #             print(f'knocked down {currRow, currCol, moveIndex}')
+        #             currRow += drow
+        #             currCol += dcol
+        #             if moveIndex < 2:
+        #                 newMove = moveIndex + 2
+        #             else:
+        #                 newMove = moveIndex - 2
+        #             currPos = (currRow, currCol)
+        #             self.list[currRow][currCol][newMove] = 0
+
+        #             rest = self.generateMaze(visited, currPos)
+        #             if rest != None:
+        #                 return rest
+        #             visited.add(currPos)
+        #             #self.list[currRow][currCol][newMove] = 1
+        #             currRow -= drow
+        #             currCol -= dcol
+        #             currPos = (currRow, currCol)
+        #             print(f'backtrack to {currRow, currCol}')
+        #     return None
