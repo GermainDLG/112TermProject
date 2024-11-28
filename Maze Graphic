@@ -5,8 +5,8 @@ from Other_Maze import *
 def onAppStart(app):
     app.width = 600
     app.height = 600
-    app.rows = 5
-    app.cols = 5
+    app.rows = 4
+    app.cols = 4
     app.maze1 = Maze(app.rows,app.cols)
     app.maze2 = Maze(app.rows,app.cols)
     app.maze3 = Maze(app.rows,app.cols)
@@ -67,7 +67,7 @@ def test2(app):
 
 def mazeSetup(maze):
     maze.generateList()
-    maze.generateMaze(set(),(0,0))
+    maze.generateMaze([],(0,0))
 
 def drawMaze(app, maze):
     for row in range(app.rows):

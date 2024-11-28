@@ -6,10 +6,8 @@ from collections import deque
 
 #     SANDBOX FOR TESTING
 
-d = deque()
-d.append(6)
-d.append(5)
-d.popleft()
+d = dict()
+d[(1,1)] = 6
 print(d)
 
 

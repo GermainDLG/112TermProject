@@ -8,7 +8,7 @@ def onAppStart(app):
     app.gameOver = False
     app.width = 600
     app.height = 600
-    app.rows = 5
+    app.rows = 5 #MAKE EACHS SQUARE SMALLER PLEEEEEEEEEEEEEEEEEEEEEEEEEEASE
     app.cols = 5
     app.maze = Maze(app.rows,app.cols)
     app.maze.generateList()
