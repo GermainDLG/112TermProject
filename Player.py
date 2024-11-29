@@ -1,5 +1,6 @@
 from cmu_graphics import *
 from Other_Maze import Maze
+from CatAI import specificCost
 
 def onAppStart(app):
     app.playerLocation = [3,2]
@@ -13,7 +14,7 @@ def onAppStart(app):
     app.maze = Maze(app.rows,app.cols)
     app.maze.generateList()
     app.maze.generateMaze([],(0,0))
-    print(app.maze)
+    app.cost, app.path = specificCost(app.maze.list, tuple(app.catLocation), tuple(app.playerLocation))
     app.screen = 'start' #start, game, controls
 
 def drawMaze(app, maze):
@@ -32,8 +33,8 @@ def drawMaze(app, maze):
                 drawLine(150 + (100*col), 50 + (100*row),
                          150 + (100*col), 150 + (100*row))
 
-def getCenter(app):
-    row, col = app.playerLocation
+def getCenter(coordinates):
+    row, col = coordinates[0], coordinates[1]
     center = [100 + (100*col), 100 + (100*row)]
     return(center)
 
@@ -51,6 +52,10 @@ def onKeyPress(app, key):
         elif (key == 'd'):
             if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][3] == 0):
                 app.playerLocation[1] += 1
+        elif key == 'space':
+            app.catLocation = app.path[0]
+            app.cost, app.path = specificCost(app.maze, app.catLocation, app.playerLocation)
+
 
 def onMousePress(app, mouseX, mouseY):
     if app.screen == 'start':
@@ -86,8 +91,11 @@ def redrawAll(app):
 
     elif app.screen == 'game':
         drawMaze(app, app.maze)
-        playerCoords = getCenter(app)
+        playerCoords = getCenter(app.playerLocation)
         drawCircle(*playerCoords,15,fill='green')
+        catCoords = getCenter(app.catLocation)
+        drawCircle(*catCoords, 15, fill = 'red')
+
     
     elif app.screen == 'controls':
         drawRect(200,500,200,50,fill=None,border = 'black')

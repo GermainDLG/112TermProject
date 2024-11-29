@@ -30,15 +30,11 @@ class Maze:
                 i = random.randint(0,len(directionsIndex)-1)
                 moveIndex = directionsIndex[i]
                 visited.append(currPos)
-                print(f'currPos: {currPos}')
-                print(f'visited {visited}')
-                print(f'directionsIndex: {directionsIndex}')
                 directionsIndex.pop(i)
                 move = directionList[moveIndex]
                 drow, dcol = move
                 currRow, currCol = currPos
                 self.list[currRow][currCol][moveIndex] = 0
-                print(f'knocked down {currRow, currCol, moveIndex}')
                 currRow += drow
                 currCol += dcol
                 if moveIndex < 2:
@@ -56,7 +52,6 @@ class Maze:
                 currRow -= drow
                 currCol -= dcol
                 currPos = (currRow, currCol)
-                print(f'backtrack to {currRow, currCol}')
             return None
                     
     def getPossibleDirections(self, currPos,visited):
