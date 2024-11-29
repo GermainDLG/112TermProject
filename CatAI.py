@@ -1,13 +1,15 @@
 from cmu_graphics import *
 from collections import deque
 import copy
+from Other_Maze import Maze
 # deque info from: https://www.geeksforgeeks.org/queue-in-python/
 # BFS learning from: https://www.youtube.com/watch?v=T_m27bhVQQQ
 
 def specificCost(maze, currPos, goalPos):
-    print(maze)
-    costs, paths = BFS(maze, currPos)
-    return costs[goalPos], paths[goalPos]
+    if isinstance(maze, Maze):
+        maze = maze.list
+    paths = BFS(maze, currPos)
+    return paths[goalPos]
 
 def BFS(maze, startingPos):
     directionsList = [(1,0),(0,-1),(-1,0),(0,1)] #down left up right
@@ -60,30 +62,29 @@ def BFS(maze, startingPos):
                 else:
                     costs[(currRow, currCol)] = costs[(pastRow, pastCol)] + 1
                     temp = copy.deepcopy(paths[(pastRow, pastCol)])
-                    # print('-----')
-                    # print(temp is paths[(pastRow, pastCol)])
                     temp.append((currRow, currCol))
-                    # print(temp)
                     paths[(currRow, currCol)] = temp
-                    # print('~~~~~')
-                    # print(paths)
+
 
                 queue.append((currRow, currCol))
-    return costs, paths
+    return paths
 
 def isValid(maze, visited, row, col, drow, dcol, direction):
     baseRow = row
     baseCol = col
     row += drow
     col += dcol
-    # print('-----------')
-    # print((baseRow, baseCol))
-    # print(direction)
-    if(0 <= row < len(maze.list) and
-       0 <= col < len(maze.list[0])): #in maze bounds
+    if(0 <= row < len(maze) and
+       0 <= col < len(maze[0])): #in maze bounds
         if((row, col) not in visited): #hasnt been seen
             if(maze[baseRow][baseCol][direction] == 0):
-                # print('True')
                 return True
-    # print('False')
     return False
+
+# m = Maze(5,5)
+# m.generateList()
+# m.generateMaze()
+
+# a, b = specificCost(m.list,(0, 0),(3, 2))
+# print(a,b)
+# app.cost, app.path = specificCost(app.maze.list, tuple(app.catLocation), tuple(app.playerLocation))

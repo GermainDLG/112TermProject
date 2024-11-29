@@ -3,8 +3,8 @@ from Other_Maze import Maze
 from CatAI import specificCost
 
 def onAppStart(app):
-    app.playerLocation = [3,2]
-    app.catLocation = [0,0]
+    app.playerLocation = [3, 2]
+    app.catLocation = [0, 0]
     app.collected = 0
     app.gameOver = False
     app.width = 600
@@ -13,8 +13,8 @@ def onAppStart(app):
     app.cols = 5
     app.maze = Maze(app.rows,app.cols)
     app.maze.generateList()
-    app.maze.generateMaze([],(0,0))
-    app.cost, app.path = specificCost(app.maze.list, tuple(app.catLocation), tuple(app.playerLocation))
+    app.maze.generateMaze()
+    app.path = specificCost(app.maze.list, tuple(app.catLocation), tuple(app.playerLocation))
     app.screen = 'start' #start, game, controls
 
 def drawMaze(app, maze):
@@ -53,8 +53,11 @@ def onKeyPress(app, key):
             if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][3] == 0):
                 app.playerLocation[1] += 1
         elif key == 'space':
-            app.catLocation = app.path[0]
-            app.cost, app.path = specificCost(app.maze, app.catLocation, app.playerLocation)
+            app.catLocation = list(app.path.pop(0))
+            print(app.catLocation)
+            print(app.path)
+            app.path = specificCost(app.maze.list, tuple(app.catLocation), tuple(app.playerLocation))
+            print(app.path)
 
 
 def onMousePress(app, mouseX, mouseY):

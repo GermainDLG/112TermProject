@@ -10,7 +10,11 @@ l = [1,2]
 
 t = tuple(l)
 
+r = list(t)
+
 print(t)
+print(r)
+print((r == [1,2]))
 
 # ON KEY PRESS STORAGE:
 
