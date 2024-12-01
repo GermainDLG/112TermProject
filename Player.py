@@ -1,6 +1,6 @@
 from cmu_graphics import *
 from Other_Maze import Maze
-from CatAI import specificCost
+from CatAI import *
 
 def onAppStart(app):
     app.playerLocation = [3, 2]
@@ -15,6 +15,13 @@ def onAppStart(app):
     app.maze.generateList()
     app.maze.generateMaze()
     app.path = specificCost(app.maze.list, tuple(app.catLocation), tuple(app.playerLocation))
+    app.paths = BFS(app.maze.list, tuple(app.catLocation))
+    print('~~~~~~~~~')
+    print(app.path)
+    print('~~~~~~~~~')
+    print(app.paths)
+    print('~~~~~~~~~')
+    app.countedLocation = [3, 2]
     app.screen = 'start' #start, game, controls
 
 def drawMaze(app, maze):
@@ -53,11 +60,11 @@ def onKeyPress(app, key):
             if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][3] == 0):
                 app.playerLocation[1] += 1
         elif key == 'space':
-            app.catLocation = list(app.path.pop(0))
-            print(app.catLocation)
-            print(app.path)
-            app.path = specificCost(app.maze.list, tuple(app.catLocation), tuple(app.playerLocation))
-            print(app.path)
+            app.catLocation = app.path[0]
+        app.path = specificCost(app.maze.list, tuple(app.catLocation), tuple(app.playerLocation))
+        print(app.paths)
+        print('-------')
+        print(app.path)
 
 
 def onMousePress(app, mouseX, mouseY):

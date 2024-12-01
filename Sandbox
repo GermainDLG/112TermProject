@@ -6,15 +6,11 @@ from collections import deque
 
 #     SANDBOX FOR TESTING
 
-l = [1,2]
+d = {1: 2,
+     3: 4,
+     8: 9,
+     12: 7}
 
-t = tuple(l)
-
-r = list(t)
-
-print(t)
-print(r)
-print((r == [1,2]))
 
 # ON KEY PRESS STORAGE:
 

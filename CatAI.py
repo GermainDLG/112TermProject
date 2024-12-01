@@ -36,8 +36,7 @@ def BFS(maze, startingPos):
             queue.append((currRow, currCol))
             costs[(currRow, currCol)] = 1
             paths[(currRow, currCol)] = [(currRow, currCol)]
-            currRow = 0
-            currCol = 0
+            currRow, currCol = startingPos
     while queue != deque():
         currRow, currCol = queue.popleft()
         visited.append((currRow, currCol))
