@@ -16,13 +16,8 @@ def onAppStart(app):
     app.maze.generateMaze()
     app.path = specificCost(app.maze.list, tuple(app.catLocation), tuple(app.playerLocation))
     app.paths = BFS(app.maze.list, tuple(app.catLocation))
-    print('~~~~~~~~~')
-    print(app.path)
-    print('~~~~~~~~~')
-    print(app.paths)
-    print('~~~~~~~~~')
-    app.countedLocation = [3, 2]
     app.screen = 'start' #start, game, controls
+    app.stepsPerSecond = 1
 
 def drawMaze(app, maze):
     for row in range(app.rows):
@@ -59,13 +54,18 @@ def onKeyPress(app, key):
         elif (key == 'd'):
             if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][3] == 0):
                 app.playerLocation[1] += 1
-        elif key == 'space':
-            app.catLocation = app.path[0]
-        app.path = specificCost(app.maze.list, tuple(app.catLocation), tuple(app.playerLocation))
-        print(app.paths)
-        print('-------')
-        print(app.path)
 
+
+def onStep(app):
+    if app.screen == 'game':
+        if app.catLocation == tuple(app.playerLocation):
+            app.screen = 'start'
+            app.catLocation = [0, 0]
+        else:
+            app.path = specificCost(app.maze.list, tuple(app.catLocation), tuple(app.playerLocation))
+            app.paths = BFS(app.maze.list, tuple(app.catLocation))
+            app.catLocation = app.path[0]
+            print(app.catLocation, app.playerLocation)
 
 def onMousePress(app, mouseX, mouseY):
     if app.screen == 'start':
