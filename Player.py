@@ -24,6 +24,7 @@ def onAppStart(app):
     app.paths = BFS(app.maze.list, tuple(app.catLocation))
     app.screen = 'start' #start, game, controls
     app.stepsPerSecond = 2
+    app.mouseRotation = 0
 
     # **NONE OF THE IMAGES ARE MINE, WORK CITED AT TOP**
     app.catPath = './Images/cat.png'
@@ -58,28 +59,36 @@ def onKeyPress(app, key):
         if (key == 'w'):
             if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][2] == 0):
                 app.playerLocation[0] -= 1
+                app.mouseRotation = 0
         elif (key == 'a'):
             if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][1] == 0):
                 app.playerLocation[1] -= 1
+                app.mouseRotation = 270
         elif (key == 's'):
             if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][0] == 0):
                 app.playerLocation[0] += 1
+                app.mouseRotation = 180
         elif (key == 'd'):
             if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][3] == 0):
                 app.playerLocation[1] += 1
+                app.mouseRotation = 90
     elif app.screen == '2Player':
         if key == 'w':
             if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][2] == 0):
                 app.playerLocation[0] -= 1
+                app.mouseRotation = 0
         elif (key == 'a'):
             if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][1] == 0):
                 app.playerLocation[1] -= 1
+                app.mouseRotation = 270
         elif (key == 's'):
             if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][0] == 0):
                 app.playerLocation[0] += 1
+                app.mouseRotation = 180
         elif (key == 'd'):
             if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][3] == 0):
                 app.playerLocation[1] += 1
+                app.mouseRotation = 90
 
         if key == 'up':
             if(app.maze.list[app.catLocation[0]][app.catLocation[1]][2] == 0):
@@ -96,12 +105,14 @@ def onKeyPress(app, key):
         if(app.playerLocation == app.catLocation):
             app.screen = 'start'
             app.catLocation = [0, 0]
+            app.playerLocation = [3, 2]
 
 def onStep(app):
     if app.screen == 'game':
         if app.catLocation == tuple(app.playerLocation):
             app.screen = 'start'
             app.catLocation = [0, 0]
+            app.playerLocation = [3, 2]
         else:
             app.path = specificCost(app.maze.list, tuple(app.catLocation), tuple(app.playerLocation))
             app.paths = BFS(app.maze.list, tuple(app.catLocation))
@@ -109,13 +120,18 @@ def onStep(app):
             if app.catLocation == tuple(app.playerLocation):
                 app.screen = 'start'
                 app.catLocation = [0, 0]
+                app.playerLocation = [3, 2]
 
 def onMousePress(app, mouseX, mouseY):
     if app.screen == 'start':
         if (inStartBounds(app,mouseX,mouseY) == True):
             app.screen = 'game'
+            app.catLocation = [0, 0]
+            app.playerLocation = [3, 2]
         elif (in2PlayerBounds(app,mouseX,mouseY) == True):
             app.screen = '2Player'
+            app.catLocation = [0, 0]
+            app.playerLocation = [3, 2]
         elif(inControlBounds(app,mouseX,mouseY) == True):
             app.screen = 'controls'
     elif app.screen == 'controls':
@@ -125,6 +141,7 @@ def onMousePress(app, mouseX, mouseY):
         if(0 <= mouseX <= 50) and (0 <= mouseY <= 50):
             app.screen = 'start'
             app.catLocation = [0, 0]
+            app.playerLocation = [3, 2]
 
 def inBackBounds(app, mouseX, mouseY):
     return(200 <= mouseX <= 400) and (500 <= mouseY <= 550)
@@ -157,7 +174,7 @@ def redrawAll(app):
         playerCoords = getCenter(app.playerLocation)
         for i in range(len(playerCoords)):
             playerCoords[i] -= 25
-        drawImage(app.mousePath, *playerCoords, width = 50, height = 50)
+        drawImage(app.mousePath, *playerCoords, width = 50, height = 50, rotateAngle = app.mouseRotation)
         catCoords = getCenter(app.catLocation)
         for i in range(len(catCoords)):
             catCoords[i] -= 25
