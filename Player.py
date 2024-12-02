@@ -3,9 +3,10 @@ from Other_Maze import Maze
 from CatAI import *
 
 # Cat & Mouse Drawing: Ryker Germain (Brother)
+#All below images from Pinterest account: Diana C.
 #Game Screen Tom & Jerry Background from: https://in.pinterest.com/pin/5629568267946990/
 #Start Screen Tom & Jerry Background from: https://in.pinterest.com/pin/tom-and-jerry-life-with-tom-animation-backgrounds--28710516357723207/
-
+#Controls Screen Tom & Jerry Background from: https://in.pinterest.com/pin/739716307527846587/
 
 def onAppStart(app):
     app.playerLocation = [3, 2]
@@ -29,6 +30,7 @@ def onAppStart(app):
     app.mousePath = './Images/mouse.png'
     app.backgroundPath = './Images/background.png'
     app.startBackgroundPath = './Images/startBackground.png'
+    app.controlsBackgroundPath = './Images/controlBackground.png'
 
 def drawMaze(app, maze):
     for row in range(app.rows):
@@ -162,17 +164,31 @@ def redrawAll(app):
         drawImage(app.catPath, *catCoords, width = 50, height = 50)
 
     elif app.screen == 'controls':
-        drawRect(200,500,200,50,fill=None,border = 'black')
+        drawImage(app.controlsBackgroundPath,0,0, width = 600, height = 600)
+        drawRect(200,500,200,50,fill='beige',border = 'black')
         drawLabel('Back',300,525,size=20)
-        drawRect(50,50,76,76,fill='white', border='black')
-        drawRect(50,136,76,76,fill='white', border='black')
-        drawRect(50,222,76,76,fill='white', border='black')
-        drawRect(50,308,76,76,fill='white', border='black')
-        drawLabel('W',88,88, size = 30)
-        drawLabel('A', 88, 174, size = 30)
-        drawLabel('S', 88, 260, size = 30)
-        drawLabel('D', 88, 346, size = 30)
-        drawLabel('Moves the mouse upward', 250, 88, size = 16)
+        # drawRect(50,50,76,76,fill='white', border='black')
+        # drawRect(50,136,76,76,fill='white', border='black')
+        # drawRect(50,222,76,76,fill='white', border='black')
+        # drawRect(50,308,76,76,fill='white', border='black')
+        drawRect(25,50,275, 334, fill = 'beige', border = 'black')
+        drawRect(310,50,275,334, fill = 'beige', border = 'black')
+        drawLabel('W',63,88, size = 30)
+        drawLabel('A', 63, 174, size = 30)
+        drawLabel('S', 63, 260, size = 30)
+        drawLabel('D', 63, 346, size = 30)
+        drawLabel('Moves the mouse up', 200, 88, size = 16)
+        drawLabel('Moves the mouse left',200,174, size = 16)
+        drawLabel('Moves the mouse down',200,260, size = 16)
+        drawLabel('Moves the mouse right', 200, 346, size = 16)
+        drawLabel('Objective:',447.5, 75, size = 30)
+        drawLabel('Welcome to the game of Cat & Mouse!',448,115,size = 15)
+        drawLabel('Your objective is simple:', 448, 140, size = 15)
+        drawLabel(' Collect 6 Cheese',448, 165, size=15, bold = True)
+        drawLabel('Watch out though!',448, 190, size=15)
+        drawLabel('If you get touched by the cat,',448,215,size=15)
+        drawLabel('Its game over...',448,240,size = 15)
+        drawLabel('Have fun!!',448, 265, size = 15)
 def main():
 
     runApp()
