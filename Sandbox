@@ -6,10 +6,9 @@ from collections import deque
 
 #     SANDBOX FOR TESTING
 
-d = {1: 2,
-     3: 4,
-     8: 9,
-     12: 7}
+list = [100, 100]
+
+print(list-50)
 
 
 # ON KEY PRESS STORAGE:

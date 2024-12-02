@@ -2,6 +2,11 @@ from cmu_graphics import *
 from Other_Maze import Maze
 from CatAI import *
 
+# Cat & Mouse Drawing: Ryker Germain (Brother)
+#Game Screen Tom & Jerry Background from: https://in.pinterest.com/pin/5629568267946990/
+#Start Screen Tom & Jerry Background from: https://in.pinterest.com/pin/tom-and-jerry-life-with-tom-animation-backgrounds--28710516357723207/
+
+
 def onAppStart(app):
     app.playerLocation = [3, 2]
     app.catLocation = [0, 0]
@@ -17,7 +22,13 @@ def onAppStart(app):
     app.path = specificCost(app.maze.list, tuple(app.catLocation), tuple(app.playerLocation))
     app.paths = BFS(app.maze.list, tuple(app.catLocation))
     app.screen = 'start' #start, game, controls
-    app.stepsPerSecond = 1
+    app.stepsPerSecond = 2
+
+    # **NONE OF THE IMAGES ARE MINE, WORK CITED AT TOP**
+    app.catPath = './Images/cat.png'
+    app.mousePath = './Images/mouse.png'
+    app.backgroundPath = './Images/background.png'
+    app.startBackgroundPath = './Images/startBackground.png'
 
 def drawMaze(app, maze):
     for row in range(app.rows):
@@ -82,6 +93,7 @@ def onKeyPress(app, key):
                 app.catLocation[1] += 1
         if(app.playerLocation == app.catLocation):
             app.screen = 'start'
+            app.catLocation = [0, 0]
 
 def onStep(app):
     if app.screen == 'game':
@@ -92,7 +104,9 @@ def onStep(app):
             app.path = specificCost(app.maze.list, tuple(app.catLocation), tuple(app.playerLocation))
             app.paths = BFS(app.maze.list, tuple(app.catLocation))
             app.catLocation = app.path[0]
-            print(app.catLocation, app.playerLocation)
+            if app.catLocation == tuple(app.playerLocation):
+                app.screen = 'start'
+                app.catLocation = [0, 0]
 
 def onMousePress(app, mouseX, mouseY):
     if app.screen == 'start':
@@ -124,29 +138,43 @@ def inControlBounds(app, mouseX, mouseY):
 
 def redrawAll(app): 
     if app.screen == 'start':
-        #drawRect(100,100,400,100)
+        drawImage(app.startBackgroundPath,0, 0, width = 600, height = 600)
         drawLabel('Cat and Mouse',300,100,size = 60)
         drawLabel('Around the World',300,155,size = 35)
-        drawRect(150,250,300,75, fill = None, border = 'black')
+        drawRect(150,250,300,75, fill = 'skyBlue', border = 'black')
         drawLabel('Start',300,287, size = 30)
-        drawRect(175,350,250,75, fill = None, border = 'black')
+        drawRect(175,350,250,75, fill = 'lightGreen', border = 'black')
         drawLabel('2 Player',300,387, size = 20)
-        drawRect(200,450,200,75,fill= None, border = 'black')
+        drawRect(200,450,200,75,fill= 'crimson', border = 'black')
         drawLabel('Controls',300,487,size=20)
 
     elif app.screen == 'game' or app.screen == '2Player':
+        drawImage(app.backgroundPath, 0, 0, width = 600, height = 600)
+        drawRect(50,50,500,500, fill='peru')
         drawMaze(app, app.maze)
         playerCoords = getCenter(app.playerLocation)
-        drawCircle(*playerCoords,15,fill='green')
+        for i in range(len(playerCoords)):
+            playerCoords[i] -= 25
+        drawImage(app.mousePath, *playerCoords, width = 50, height = 50)
         catCoords = getCenter(app.catLocation)
-        drawCircle(*catCoords, 15, fill = 'red')
+        for i in range(len(catCoords)):
+            catCoords[i] -= 25
+        drawImage(app.catPath, *catCoords, width = 50, height = 50)
 
-    
     elif app.screen == 'controls':
         drawRect(200,500,200,50,fill=None,border = 'black')
         drawLabel('Back',300,525,size=20)
-
+        drawRect(50,50,76,76,fill='white', border='black')
+        drawRect(50,136,76,76,fill='white', border='black')
+        drawRect(50,222,76,76,fill='white', border='black')
+        drawRect(50,308,76,76,fill='white', border='black')
+        drawLabel('W',88,88, size = 30)
+        drawLabel('A', 88, 174, size = 30)
+        drawLabel('S', 88, 260, size = 30)
+        drawLabel('D', 88, 346, size = 30)
+        drawLabel('Moves the mouse upward', 250, 88, size = 16)
 def main():
+
     runApp()
 
 main()
