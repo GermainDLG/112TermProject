@@ -8,6 +8,9 @@ from CatAI import *
 #Start Screen Tom & Jerry Background from: https://in.pinterest.com/pin/tom-and-jerry-life-with-tom-animation-backgrounds--28710516357723207/
 #Controls Screen Tom & Jerry Background from: https://in.pinterest.com/pin/739716307527846587/
 
+
+#Checklist: Add and randomize cheese location, add win/loss screen, cube rotation
+
 def onAppStart(app):
     app.playerLocation = [3, 2]
     app.catLocation = [0, 0]
@@ -22,7 +25,7 @@ def onAppStart(app):
     app.maze.generateMaze()
     app.path = specificCost(app.maze.list, tuple(app.catLocation), tuple(app.playerLocation))
     app.paths = BFS(app.maze.list, tuple(app.catLocation))
-    app.screen = 'start' #start, game, controls
+    app.screen = 'start' #start, game, controls, 2Player, loss, win
     app.stepsPerSecond = 2
     app.mouseRotation = 0
 
@@ -103,14 +106,14 @@ def onKeyPress(app, key):
             if(app.maze.list[app.catLocation[0]][app.catLocation[1]][3] == 0):
                 app.catLocation[1] += 1
         if(app.playerLocation == app.catLocation):
-            app.screen = 'start'
+            app.screen = 'loss'
             app.catLocation = [0, 0]
             app.playerLocation = [3, 2]
 
 def onStep(app):
     if app.screen == 'game':
         if app.catLocation == tuple(app.playerLocation):
-            app.screen = 'start'
+            app.screen = 'loss'
             app.catLocation = [0, 0]
             app.playerLocation = [3, 2]
         else:
@@ -118,7 +121,7 @@ def onStep(app):
             app.paths = BFS(app.maze.list, tuple(app.catLocation))
             app.catLocation = app.path[0]
             if app.catLocation == tuple(app.playerLocation):
-                app.screen = 'start'
+                app.screen = 'loss'
                 app.catLocation = [0, 0]
                 app.playerLocation = [3, 2]
 
@@ -184,20 +187,16 @@ def redrawAll(app):
         drawImage(app.controlsBackgroundPath,0,0, width = 600, height = 600)
         drawRect(200,500,200,50,fill='beige',border = 'black')
         drawLabel('Back',300,525,size=20)
-        # drawRect(50,50,76,76,fill='white', border='black')
-        # drawRect(50,136,76,76,fill='white', border='black')
-        # drawRect(50,222,76,76,fill='white', border='black')
-        # drawRect(50,308,76,76,fill='white', border='black')
         drawRect(25,50,275, 334, fill = 'beige', border = 'black')
         drawRect(310,50,275,334, fill = 'beige', border = 'black')
-        drawLabel('W',63,88, size = 30)
-        drawLabel('A', 63, 174, size = 30)
-        drawLabel('S', 63, 260, size = 30)
-        drawLabel('D', 63, 346, size = 30)
-        drawLabel('Moves the mouse up', 200, 88, size = 16)
-        drawLabel('Moves the mouse left',200,174, size = 16)
-        drawLabel('Moves the mouse down',200,260, size = 16)
-        drawLabel('Moves the mouse right', 200, 346, size = 16)
+        drawLabel('W/Up',63,88, size = 30)
+        drawLabel('A/Left', 63, 174, size = 30)
+        drawLabel('S/Down', 63, 260, size = 30)
+        drawLabel('D/Right', 63, 346, size = 30)
+        drawLabel('Moves the mouse/cat up', 200, 88, size = 16)
+        drawLabel('Moves the mouse/cat left',200,174, size = 16)
+        drawLabel('Moves the mouse/cat down',200,260, size = 16)
+        drawLabel('Moves the mouse/cat right', 200, 346, size = 16)
         drawLabel('Objective:',447.5, 75, size = 30)
         drawLabel('Welcome to the game of Cat & Mouse!',448,115,size = 15)
         drawLabel('Your objective is simple:', 448, 140, size = 15)
@@ -206,6 +205,9 @@ def redrawAll(app):
         drawLabel('If you get touched by the cat,',448,215,size=15)
         drawLabel('Its game over...',448,240,size = 15)
         drawLabel('Have fun!!',448, 265, size = 15)
+
+    elif app.screen == 'loss':
+        pass
 def main():
 
     runApp()

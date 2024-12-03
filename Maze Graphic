@@ -5,8 +5,8 @@ from Other_Maze import *
 def onAppStart(app):
     app.width = 600
     app.height = 600
-    app.rows = 4
-    app.cols = 4
+    app.rows = 5
+    app.cols = 5
     app.maze1 = Maze(app.rows,app.cols)
     app.maze2 = Maze(app.rows,app.cols)
     app.maze3 = Maze(app.rows,app.cols)
@@ -26,19 +26,14 @@ def onAppStart(app):
     app.maze5.surrounding = [app.maze6, app.maze2, app.maze3, app.maze4]
     app.maze6.surrounding = [app.maze1, app.maze2, app.maze5, app.maze4]
     app.possible6Surrounding = [[app.maze1, app.maze2, app.maze5, app.maze4],
-                                [app.maze5, app.maze4, app.maze1, app.maze2]] #vertical, horizontal
+                                [app.maze5, app.maze4, app.maze1, app.maze2]]
     app.mazeList = [app.maze1, app.maze2, app.maze3, app.maze4, app.maze5, app.maze6]
-
-    app.yawList = [app.maze3, app.maze4, app.maze6, app.maze2]
-    app.notYawList = [app.maze1, app.maze5]
-    app.pitchList = [app.maze3, app.maze5, app.maze6, app.maze1]
-    app.notPitchList = [app.maze2, app.maze4]
-    app.rollList = [app.maze1, app.maze4, app.maze5, app.maze2]
-    app.notRollList = [app.maze3, app.maze6]
-
+    app.horizRotation = 0
+    app.vertRotation = 0
     app.currMaze = app.maze3
     app.mazeFace = '3'
     app.mazeNumSurrounding = [5, 2, 1, 4]
+    app.newSurrounding = []
 
 
 def testFunction(app):
@@ -90,45 +85,61 @@ def redrawAll(app):
     drawLabel(app.mazeFace,300,575)
     drawLabel(app.mazeNumSurrounding, 300, 590)
 
-def up(app, prevMaze):
-    app.currMaze = prevMaze.surrounding[2]
-    leftMaze = app.currMaze.surrounding[1]
-    rightMaze = app.currMaze.surrounding[3]
-    leftMaze.surrounding.insert(0,leftMaze.surrounding.pop()) #WATCH OUIT FOR 6
-    rightMaze.surrounding.append(rightMaze.surrounding.pop(0))
-
-def down(app,prevMaze):
-    app.currMaze = prevMaze.surrounding[0]
-    leftMaze = app.currMaze.surrounding[1]
-    rightMaze = app.currMaze.surrounding[3]
-    rightMaze.surrounding.insert(0,rightMaze.surrounding.pop()) #WATCH OUT FOR 6
-    leftMaze.surrounding.append(leftMaze.surrounding.pop(0))
-
-def left(app,prevMaze):
-    app.currMaze = prevMaze.surrounding[1]
-    topMaze = app.currMaze.surrounding[2]
-    bottomMaze = app.currMaze.surrounding[0]
-    topMaze.surrounding.append(topMaze.surrounding.pop(0))
-    bottomMaze.surrounding.insert(0,bottomMaze.surrounding.pop())
-
-def right(app,prevMaze):
-    app.currMaze = prevMaze.surrounding[3]
-    topMaze = app.currMaze.surrounding[2]
-    bottomMaze = app.currMaze.surrounding[0]
-    bottomMaze.surrounding.append(bottomMaze.surrounding.pop(0))
-    topMaze.surrounding.insert(0,topMaze.surrounding.pop())
-
-#WHICH WAY IS DIRECTIONALLY UP
-def onKeyPress(app, key): #REWRITE THIS TO FIND WHICHEVER ROTATION THE TWO FACES ARENT ON AND CHANGE THAT
-    prevMaze = app.currMaze
+def onKeyPress(app, key):
+    direction = 0
+    temp = app.currMaze
     if key == 'up':
-        up(app, prevMaze)
+        leftMaze = app.currMaze.surrounding[1]
+        rightMaze = app.currMaze.surrounding[3]
+        if leftMaze == app.maze6:
+            leftMaze = app.possible6Surrounding[1]
+            leftMaze.insert(0,leftMaze.pop())
+        else: leftMaze.surrounding.insert(0,leftMaze.surrounding.pop())
+        if rightMaze == app.maze6:
+            rightMaze = app.possible6Surrounding[1]
+            rightMaze.append(rightMaze.pop(0))
+        else: rightMaze.surrounding.append(rightMaze.surrounding.pop(0))
+        app.currMaze = temp.surrounding[2]
+        app.maze6.surrounding = app.possible6Surrounding[0]
     elif key == 'down':
-        down(app, prevMaze)
+        leftMaze = app.currMaze.surrounding[1]
+        rightMaze = app.currMaze.surrounding[3]
+        if leftMaze == app.maze6:
+            leftMaze = app.possible6Surrounding[1]
+            leftMaze.append(leftMaze.pop(0))
+        else: leftMaze.surrounding.append(leftMaze.surrounding.pop(0))
+        if rightMaze == app.maze6:
+            rightMaze = app.possible6Surrounding[1]
+            rightMaze.insert(0,rightMaze.pop())
+        else: rightMaze.surrounding.insert(0,rightMaze.surrounding.pop())
+        app.currMaze = temp.surrounding[0]
+        app.maze6.surrounding = app.possible6Surrounding[0]
     elif key == 'left':
-        left(app, prevMaze)
+        topMaze = app.currMaze.surrounding[2]
+        bottomMaze = app.currMaze.surrounding[0]
+        if bottomMaze == app.maze6:
+            bottomMaze = app.possible6Surrounding[0]
+            bottomMaze.append(bottomMaze.pop(0))
+        else: bottomMaze.surrounding.append(bottomMaze.surrounding.pop(0))
+        if topMaze == app.maze6:
+            topMaze = app.possible6Surrounding[0]
+            topMaze.insert(0,topMaze.pop())
+        else: topMaze.surrounding.insert(0, topMaze.surrounding.pop())
+        app.currMaze = temp.surrounding[1]
+        app.maze6.surrounding = app.possible6Surrounding[1]
     elif key == 'right':
-        right(app,prevMaze)
+        topMaze = app.currMaze.surrounding[2]
+        bottomMaze = app.currMaze.surrounding[0]
+        if bottomMaze == app.maze6:
+            bottomMaze = app.possible6Surrounding[0]
+            bottomMaze.insert(0,bottomMaze.pop())
+        else: bottomMaze.surrounding.insert(0, bottomMaze.surrounding.pop())
+        if topMaze == app.maze6:
+            topMaze = app.possible6Surrounding[0]
+            topMaze.append(topMaze.pop(0))
+        else: topMaze.surrounding.append(topMaze.surrounding.pop(0))
+        app.currMaze = temp.surrounding[3]
+        app.maze6.surrounding = app.possible6Surrounding[1]
     testFunction(app)
     test2(app)
 
@@ -136,3 +147,48 @@ def main():
     runApp()
 
 main()
+
+
+
+
+# def up(app, prevMaze):
+#     app.currMaze = prevMaze.surrounding[2]
+#     leftMaze = app.currMaze.surrounding[1]
+#     rightMaze = app.currMaze.surrounding[3]
+#     leftMaze.surrounding.insert(0,leftMaze.surrounding.pop()) #WATCH OUIT FOR 6
+#     rightMaze.surrounding.append(rightMaze.surrounding.pop(0))
+
+# def down(app,prevMaze):
+#     app.currMaze = prevMaze.surrounding[0]
+#     leftMaze = app.currMaze.surrounding[1]
+#     rightMaze = app.currMaze.surrounding[3]
+#     rightMaze.surrounding.insert(0,rightMaze.surrounding.pop()) #WATCH OUT FOR 6
+#     leftMaze.surrounding.append(leftMaze.surrounding.pop(0))
+
+# def left(app,prevMaze):
+#     app.currMaze = prevMaze.surrounding[1]
+#     topMaze = app.currMaze.surrounding[2]
+#     bottomMaze = app.currMaze.surrounding[0]
+#     topMaze.surrounding.append(topMaze.surrounding.pop(0))
+#     bottomMaze.surrounding.insert(0,bottomMaze.surrounding.pop())
+
+# def right(app,prevMaze):
+#     app.currMaze = prevMaze.surrounding[3]
+#     topMaze = app.currMaze.surrounding[2]
+#     bottomMaze = app.currMaze.surrounding[0]
+#     bottomMaze.surrounding.append(bottomMaze.surrounding.pop(0))
+#     topMaze.surrounding.insert(0,topMaze.surrounding.pop())
+
+# #WHICH WAY IS DIRECTIONALLY UP
+# def onKeyPress(app, key): #REWRITE THIS TO FIND WHICHEVER ROTATION THE TWO FACES ARENT ON AND CHANGE THAT
+#     prevMaze = app.currMaze
+#     if key == 'up':
+#         up(app, prevMaze)
+#     elif key == 'down':
+#         down(app, prevMaze)
+#     elif key == 'left':
+#         left(app, prevMaze)
+#     elif key == 'right':
+#         right(app,prevMaze)
+#     testFunction(app)
+#     test2(app)
