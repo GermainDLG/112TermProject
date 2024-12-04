@@ -117,27 +117,27 @@ def onKeyPress(app, key):
     elif key == 'left':
         topMaze = app.currMaze.surrounding[2]
         bottomMaze = app.currMaze.surrounding[0]
-        if bottomMaze == app.maze6:
-            bottomMaze = app.possible6Surrounding[0]
-            bottomMaze.append(bottomMaze.pop(0))
-        else: bottomMaze.surrounding.append(bottomMaze.surrounding.pop(0))
         if topMaze == app.maze6:
             topMaze = app.possible6Surrounding[0]
-            topMaze.insert(0,topMaze.pop())
-        else: topMaze.surrounding.insert(0, topMaze.surrounding.pop())
+            topMaze.append(topMaze.pop(0))
+        else: topMaze.surrounding.append(topMaze.surrounding.pop(0))
+        if bottomMaze == app.maze6:
+            bottomMaze = app.possible6Surrounding[0]
+            bottomMaze.insert(0,bottomMaze.pop())
+        else: bottomMaze.surrounding.insert(0, bottomMaze.surrounding.pop())
         app.currMaze = temp.surrounding[1]
         app.maze6.surrounding = app.possible6Surrounding[1]
     elif key == 'right':
         topMaze = app.currMaze.surrounding[2]
         bottomMaze = app.currMaze.surrounding[0]
-        if bottomMaze == app.maze6:
-            bottomMaze = app.possible6Surrounding[0]
-            bottomMaze.insert(0,bottomMaze.pop())
-        else: bottomMaze.surrounding.insert(0, bottomMaze.surrounding.pop())
         if topMaze == app.maze6:
             topMaze = app.possible6Surrounding[0]
-            topMaze.append(topMaze.pop(0))
-        else: topMaze.surrounding.append(topMaze.surrounding.pop(0))
+            topMaze.insert(0,topMaze.pop())
+        else: topMaze.surrounding.insert(0, topMaze.surrounding.pop())
+        if bottomMaze == app.maze6:
+            bottomMaze = app.possible6Surrounding[0]
+            bottomMaze.append(bottomMaze.pop(0))
+        else: bottomMaze.surrounding.append(bottomMaze.surrounding.pop(0))
         app.currMaze = temp.surrounding[3]
         app.maze6.surrounding = app.possible6Surrounding[1]
     testFunction(app)

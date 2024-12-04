@@ -1,13 +1,15 @@
 from cmu_graphics import *
 from Other_Maze import Maze
 from CatAI import *
+import random
 
 # Cat & Mouse Drawing: Ryker Germain (Brother)
 #All below images from Pinterest account: Diana C.
 #Game Screen Tom & Jerry Background from: https://in.pinterest.com/pin/5629568267946990/
 #Start Screen Tom & Jerry Background from: https://in.pinterest.com/pin/tom-and-jerry-life-with-tom-animation-backgrounds--28710516357723207/
 #Controls Screen Tom & Jerry Background from: https://in.pinterest.com/pin/739716307527846587/
-
+#Win Screen Tom & Jerry Background from: https://in.pinterest.com/pin/749990144227580505/
+#Loss Screen Tom & Jerry Background from: https://in.pinterest.com/pin/tom-jerry-casanova-cat-animation-backgrounds--492370171755936393/
 
 #Checklist: Add and randomize cheese location, add win/loss screen, cube rotation
 
@@ -26,15 +28,20 @@ def onAppStart(app):
     app.path = specificCost(app.maze.list, tuple(app.catLocation), tuple(app.playerLocation))
     app.paths = BFS(app.maze.list, tuple(app.catLocation))
     app.screen = 'start' #start, game, controls, 2Player, loss, win
-    app.stepsPerSecond = 2
+    app.stepsPerSecond = 0.75
     app.mouseRotation = 0
+    app.numCheese = 6
+    app.cheeseList = []
 
-    # **NONE OF THE IMAGES ARE MINE, WORK CITED AT TOP**
+    # Only the cheese was drawn by me, all other images cited at the top
     app.catPath = './Images/cat.png'
     app.mousePath = './Images/mouse.png'
     app.backgroundPath = './Images/background.png'
     app.startBackgroundPath = './Images/startBackground.png'
     app.controlsBackgroundPath = './Images/controlBackground.png'
+    app.winBackgroundPath =  './Images/winBackground.png'
+    app.lossBackgroundPath = './Images/lossBackground.png'
+    app.cheesePath = './Images/cheese.png'
 
 def drawMaze(app, maze):
     for row in range(app.rows):
@@ -56,6 +63,23 @@ def getCenter(coordinates):
     row, col = coordinates[0], coordinates[1]
     center = [100 + (100*col), 100 + (100*row)]
     return(center)
+
+def cheeseCoords(app):
+    for ___ in range(app.numCheese):
+        random = generateRandom(app)
+        centerX, centerY = getCenter(random)
+        while (centerX, centerY) in app.cheeseList:
+            random = generateRandom(app)
+            centerX, centerY = getCenter(random)
+        leftX = centerX - 50
+        topY = centerY - 50
+        drawImage(app.cheesePath,leftX, topY, width = 100, height=100)
+        app.cheeseList.append((centerX, centerY))
+
+def generateRandom(app):
+    randomX = random.randint(0,app.rows)
+    randomY = random.randint(0,app.cols)
+    return (randomX, randomY)
 
 def onKeyPress(app, key):
     if app.screen == 'game':
@@ -138,15 +162,18 @@ def onMousePress(app, mouseX, mouseY):
         elif(inControlBounds(app,mouseX,mouseY) == True):
             app.screen = 'controls'
     elif app.screen == 'controls':
-        if (inBackBounds(app,mouseX,mouseY) == True):
+        if (inControlsBackBounds(app,mouseX,mouseY) == True):
             app.screen = 'start'
     elif app.screen == 'game' or app.screen == '2Player':
         if(0 <= mouseX <= 50) and (0 <= mouseY <= 50):
             app.screen = 'start'
             app.catLocation = [0, 0]
             app.playerLocation = [3, 2]
+    elif app.screen == 'loss':
+        if(inLossBounds(app,mouseX,mouseY) == True):
+            app.screen = 'start'
 
-def inBackBounds(app, mouseX, mouseY):
+def inControlsBackBounds(app, mouseX, mouseY):
     return(200 <= mouseX <= 400) and (500 <= mouseY <= 550)
 
 def inStartBounds(app, mouseX, mouseY):
@@ -157,6 +184,9 @@ def in2PlayerBounds(app, mouseX, mouseY):
 
 def inControlBounds(app, mouseX, mouseY):
     return (200 <= mouseX <= 400) and (450 <= mouseY <= 525)
+
+def inLossBounds(app,mouseX,mouseY):
+    return (150 <= mouseX <= 450) and (250 <= mouseY <= 350)
 
 def redrawAll(app): 
     if app.screen == 'start':
@@ -174,6 +204,7 @@ def redrawAll(app):
         drawImage(app.backgroundPath, 0, 0, width = 600, height = 600)
         drawRect(50,50,500,500, fill='peru')
         drawMaze(app, app.maze)
+        cheeseCoords(app)
         playerCoords = getCenter(app.playerLocation)
         for i in range(len(playerCoords)):
             playerCoords[i] -= 25
@@ -189,14 +220,14 @@ def redrawAll(app):
         drawLabel('Back',300,525,size=20)
         drawRect(25,50,275, 334, fill = 'beige', border = 'black')
         drawRect(310,50,275,334, fill = 'beige', border = 'black')
-        drawLabel('W/Up',63,88, size = 30)
-        drawLabel('A/Left', 63, 174, size = 30)
-        drawLabel('S/Down', 63, 260, size = 30)
-        drawLabel('D/Right', 63, 346, size = 30)
-        drawLabel('Moves the mouse/cat up', 200, 88, size = 16)
-        drawLabel('Moves the mouse/cat left',200,174, size = 16)
-        drawLabel('Moves the mouse/cat down',200,260, size = 16)
-        drawLabel('Moves the mouse/cat right', 200, 346, size = 16)
+        drawLabel('W',63,88, size = 30)
+        drawLabel('A', 63, 174, size = 30)
+        drawLabel('S', 63, 260, size = 30)
+        drawLabel('D', 63, 346, size = 30)
+        drawLabel('Moves the mouse up', 200, 88, size = 16)
+        drawLabel('Moves the mouse left',200,174, size = 16)
+        drawLabel('Moves the mouse down',200,260, size = 16)
+        drawLabel('Moves the mouse right', 200, 346, size = 16)
         drawLabel('Objective:',447.5, 75, size = 30)
         drawLabel('Welcome to the game of Cat & Mouse!',448,115,size = 15)
         drawLabel('Your objective is simple:', 448, 140, size = 15)
@@ -207,7 +238,11 @@ def redrawAll(app):
         drawLabel('Have fun!!',448, 265, size = 15)
 
     elif app.screen == 'loss':
-        pass
+        drawImage(app.lossBackgroundPath,0,0,width = 600, height = 600)
+        drawRect(150,250,300,100,fill='beige', border='black')
+        drawLabel('The Cat Caught You :(', 300,100,size=50, bold = True)
+        drawLabel('Try Again?',300,300, size = 30)
+
 def main():
 
     runApp()
