@@ -5,12 +5,16 @@ from Other_Maze import Maze
 from collections import deque
 
 #     SANDBOX FOR TESTING
+x = 5
+y = 5
+B = Maze(x,y)
+A = Maze(x,y)
+A.generateList()
+B.generateList()
+A.generateMaze([], (0,0))
+B.generateMaze([], (0,0))
+print(A == B)
 
-l = [(1,2), (2,6)]
-
-index = l.index((1,2))
-l.pop(index)
-print(l)
 
 # ON KEY PRESS STORAGE:
 

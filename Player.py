@@ -52,9 +52,9 @@ def reset(app):
     app.height = 600
     app.rows = 5 #MAKE EACHS SQUARE SMALLER PLEEEEEEEEEEEEEEEEEEEEEEEEEEASE
     app.cols = 5
-    app.maze = Maze(app.rows,app.cols)
+    app.maze = Maze(app.rows,app.cols) #ALIASED
     app.maze.generateList()
-    app.maze.generateMaze()
+    app.maze.generateMaze([], (0,0))
     app.path = specificCost(app.maze.list, tuple(app.catLocation), tuple(app.playerLocation))
     app.paths = BFS(app.maze.list, tuple(app.catLocation))
     app.screen = 'start' #start, game, controls, 2Player, loss, win
