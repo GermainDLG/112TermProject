@@ -1,5 +1,5 @@
 from cmu_graphics import *
-from Other_Maze import Maze
+from Other_Maze import *
 from CatAI import *
 import random
 
@@ -16,8 +16,6 @@ import random
 def onAppStart(app):
     app.playerLocation = [3, 2]
     app.catLocation = [0, 0]
-    app.collected = 0
-    app.gameOver = False
     app.width = 600
     app.height = 600
     app.rows = 5 #MAKE EACHS SQUARE SMALLER PLEEEEEEEEEEEEEEEEEEEEEEEEEEASE
@@ -32,6 +30,9 @@ def onAppStart(app):
     app.mouseRotation = 0
     app.numCheese = 6
     app.cheeseList = []
+    app.trueCheese = []
+    app.collected = 0
+    cheeseCoords(app)
 
     # Only the cheese was drawn by me, all other images cited at the top
     app.catPath = './Images/cat.png'
@@ -42,6 +43,28 @@ def onAppStart(app):
     app.winBackgroundPath =  './Images/winBackground.png'
     app.lossBackgroundPath = './Images/lossBackground.png'
     app.cheesePath = './Images/cheese.png'
+    print(app.maze.list)
+
+def reset(app):
+    app.playerLocation = [3, 2]
+    app.catLocation = [0, 0]
+    app.width = 600
+    app.height = 600
+    app.rows = 5 #MAKE EACHS SQUARE SMALLER PLEEEEEEEEEEEEEEEEEEEEEEEEEEASE
+    app.cols = 5
+    app.maze = Maze(app.rows,app.cols)
+    app.maze.generateList()
+    app.maze.generateMaze()
+    app.path = specificCost(app.maze.list, tuple(app.catLocation), tuple(app.playerLocation))
+    app.paths = BFS(app.maze.list, tuple(app.catLocation))
+    app.screen = 'start' #start, game, controls, 2Player, loss, win
+    app.stepsPerSecond = 0.75
+    app.mouseRotation = 0
+    app.numCheese = 6
+    app.cheeseList = []
+    app.trueCheese = []
+    app.collected = 0
+    cheeseCoords(app)
 
 def drawMaze(app, maze):
     for row in range(app.rows):
@@ -73,15 +96,17 @@ def cheeseCoords(app):
             centerX, centerY = getCenter(random)
         leftX = centerX - 50
         topY = centerY - 50
-        drawImage(app.cheesePath,leftX, topY, width = 100, height=100)
         app.cheeseList.append((centerX, centerY))
+        app.trueCheese.append((leftX, topY))
 
 def generateRandom(app):
-    randomX = random.randint(0,app.rows)
-    randomY = random.randint(0,app.cols)
+    randomX = random.randint(0,app.rows-1)
+    randomY = random.randint(0,app.cols-1)
     return (randomX, randomY)
 
 def onKeyPress(app, key):
+    if key == 'r':
+        reset(app)
     if app.screen == 'game':
         if (key == 'w'):
             if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][2] == 0):
@@ -131,34 +156,36 @@ def onKeyPress(app, key):
                 app.catLocation[1] += 1
         if(app.playerLocation == app.catLocation):
             app.screen = 'loss'
-            app.catLocation = [0, 0]
-            app.playerLocation = [3, 2]
+    for cheese in app.cheeseList:
+        if cheese == tuple(getCenter(app.playerLocation)):
+            index = app.cheeseList.index(cheese)
+            app.cheeseList.pop(index)
+            cheeseX, cheeseY = cheese
+            cheeseX -= 50
+            cheeseY -= 50
+            index = app.trueCheese.index((cheeseX, cheeseY))
+            app.trueCheese.pop(index)
+            app.collected += 1
+    if app.collected == app.numCheese:
+        app.screen = 'win'
 
 def onStep(app):
     if app.screen == 'game':
         if app.catLocation == tuple(app.playerLocation):
             app.screen = 'loss'
-            app.catLocation = [0, 0]
-            app.playerLocation = [3, 2]
         else:
             app.path = specificCost(app.maze.list, tuple(app.catLocation), tuple(app.playerLocation))
             app.paths = BFS(app.maze.list, tuple(app.catLocation))
             app.catLocation = app.path[0]
             if app.catLocation == tuple(app.playerLocation):
                 app.screen = 'loss'
-                app.catLocation = [0, 0]
-                app.playerLocation = [3, 2]
 
 def onMousePress(app, mouseX, mouseY):
     if app.screen == 'start':
         if (inStartBounds(app,mouseX,mouseY) == True):
             app.screen = 'game'
-            app.catLocation = [0, 0]
-            app.playerLocation = [3, 2]
         elif (in2PlayerBounds(app,mouseX,mouseY) == True):
             app.screen = '2Player'
-            app.catLocation = [0, 0]
-            app.playerLocation = [3, 2]
         elif(inControlBounds(app,mouseX,mouseY) == True):
             app.screen = 'controls'
     elif app.screen == 'controls':
@@ -167,11 +194,10 @@ def onMousePress(app, mouseX, mouseY):
     elif app.screen == 'game' or app.screen == '2Player':
         if(0 <= mouseX <= 50) and (0 <= mouseY <= 50):
             app.screen = 'start'
-            app.catLocation = [0, 0]
-            app.playerLocation = [3, 2]
-    elif app.screen == 'loss':
+    elif app.screen == 'loss' or app.screen == 'win':
         if(inLossBounds(app,mouseX,mouseY) == True):
             app.screen = 'start'
+            reset(app)
 
 def inControlsBackBounds(app, mouseX, mouseY):
     return(200 <= mouseX <= 400) and (500 <= mouseY <= 550)
@@ -204,8 +230,9 @@ def redrawAll(app):
         drawImage(app.backgroundPath, 0, 0, width = 600, height = 600)
         drawRect(50,50,500,500, fill='peru')
         drawMaze(app, app.maze)
-        cheeseCoords(app)
         playerCoords = getCenter(app.playerLocation)
+        for coordinates in app.trueCheese:
+            drawImage(app.cheesePath,*coordinates,width = 100, height = 100)
         for i in range(len(playerCoords)):
             playerCoords[i] -= 25
         drawImage(app.mousePath, *playerCoords, width = 50, height = 50, rotateAngle = app.mouseRotation)
@@ -242,6 +269,12 @@ def redrawAll(app):
         drawRect(150,250,300,100,fill='beige', border='black')
         drawLabel('The Cat Caught You :(', 300,100,size=50, bold = True)
         drawLabel('Try Again?',300,300, size = 30)
+
+    elif app.screen == 'win':
+        drawImage(app.winBackgroundPath,0,0,width = 600, height = 600)
+        drawRect(150,250,300,100,fill='beige', border='black')
+        drawLabel('You Got All The Cheese!', 300,150,size=50, bold = True)
+        drawLabel('Go Again??',300,300, size = 30)
 
 def main():
 
