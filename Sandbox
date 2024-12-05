@@ -5,15 +5,53 @@ from Other_Maze import Maze
 from collections import deque
 
 #     SANDBOX FOR TESTING
-x = 5
-y = 5
-B = Maze(x,y)
-A = Maze(x,y)
-A.generateList()
-B.generateList()
-A.generateMaze([], (0,0))
-B.generateMaze([], (0,0))
-print(A == B)
+
+
+l = [[1,2,3,4,5,8],
+     [3,4,5,6,7,8],
+     [9,0,1,2,3,8],
+     [6,7,8,9,0,8],
+     [1,3,5,7,9,8],
+     [2,4,6,8,9,0]]
+rows = len(l)
+cols = len(l[0])
+face1 = []
+face2 = []
+face3 = []
+face4 = []
+face5 = []
+setRow = None
+F1 = []
+F2 = []
+F3 = []
+F4 = []
+F5 = []
+
+def getNum(bigList, startingRow, startingCol, endingRow, endingCol):
+    tempRow = None
+    tempList = []
+    result = []
+    for row in range(startingRow, endingRow+1):
+        for col in range(startingCol, endingCol+1):
+            if tempRow == None:
+                tempRow = row
+            if tempRow == row:
+                tempList.append(bigList[row][col])
+            elif tempRow != row:
+                result.append(tempList)
+                tempRow = row
+                tempList = []
+                tempList.append(bigList[row][col])
+    result.append(tempList)
+    return(result)
+
+face1 = getNum(l, 0, 2, 1, 3)
+face2 = getNum(l, 2, 0, 3, 1)
+face3 = getNum(l, 2, 2, 3, 3)
+print(face1)
+print(face2)
+print(face3)
+
 
 
 # ON KEY PRESS STORAGE:

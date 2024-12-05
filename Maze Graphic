@@ -28,8 +28,6 @@ def onAppStart(app):
     app.possible6Surrounding = [[app.maze1, app.maze2, app.maze5, app.maze4],
                                 [app.maze5, app.maze4, app.maze1, app.maze2]]
     app.mazeList = [app.maze1, app.maze2, app.maze3, app.maze4, app.maze5, app.maze6]
-    app.horizRotation = 0
-    app.vertRotation = 0
     app.currMaze = app.maze3
     app.mazeFace = '3'
     app.mazeNumSurrounding = [5, 2, 1, 4]
@@ -86,7 +84,6 @@ def redrawAll(app):
     drawLabel(app.mazeNumSurrounding, 300, 590)
 
 def onKeyPress(app, key):
-    direction = 0
     temp = app.currMaze
     if key == 'up':
         leftMaze = app.currMaze.surrounding[1]

@@ -11,8 +11,6 @@ import random
 #Win Screen Tom & Jerry Background from: https://in.pinterest.com/pin/749990144227580505/
 #Loss Screen Tom & Jerry Background from: https://in.pinterest.com/pin/tom-jerry-casanova-cat-animation-backgrounds--492370171755936393/
 
-#Checklist: cube rotation
-
 def onAppStart(app):
     app.playerLocation = [3, 2]
     app.catLocation = [0, 0]
@@ -20,11 +18,31 @@ def onAppStart(app):
     app.height = 600
     app.rows = 5 
     app.cols = 5
-    app.maze = Maze(app.rows,app.cols)
-    app.maze.generateList()
-    app.maze.generateMaze()
-    app.path = specificCost(app.maze.list, tuple(app.catLocation), tuple(app.playerLocation))
-    app.paths = BFS(app.maze.list, tuple(app.catLocation))
+    app.maze1 = Maze(app.rows,app.cols)
+    app.maze2 = Maze(app.rows,app.cols)
+    app.maze3 = Maze(app.rows,app.cols)
+    app.maze4 = Maze(app.rows,app.cols)
+    app.maze5 = Maze(app.rows,app.cols)
+    app.maze6 = Maze(app.rows,app.cols)
+    mazeSetup(app.maze1)
+    mazeSetup(app.maze2)
+    mazeSetup(app.maze3)
+    mazeSetup(app.maze4)
+    mazeSetup(app.maze5)
+    mazeSetup(app.maze6)
+    app.maze1.surrounding = [app.maze3, app.maze2, app.maze6, app.maze4]
+    app.maze2.surrounding = [app.maze5, app.maze6, app.maze1, app.maze3]
+    app.maze3.surrounding = [app.maze5, app.maze2, app.maze1, app.maze4]
+    app.maze4.surrounding = [app.maze5, app.maze3, app.maze1, app.maze6]
+    app.maze5.surrounding = [app.maze6, app.maze2, app.maze3, app.maze4]
+    app.maze6.surrounding = [app.maze1, app.maze2, app.maze5, app.maze4]
+    app.possible6Surrounding = [[app.maze1, app.maze2, app.maze5, app.maze4],
+                                [app.maze5, app.maze4, app.maze1, app.maze2]]
+    app.mazeList = [app.maze1, app.maze2, app.maze3, app.maze4, app.maze5, app.maze6]
+    app.currMaze = app.maze3
+    app.newSurrounding = []
+    app.path = specificCost(app.currMaze.list, tuple(app.catLocation), tuple(app.playerLocation))
+    app.paths = BFS(app.currMaze.list, tuple(app.catLocation))
     app.screen = 'start' #start, game, controls, 2Player, loss, win
     app.stepsPerSecond = 0.75
     app.mouseRotation = 0
@@ -43,20 +61,39 @@ def onAppStart(app):
     app.winBackgroundPath =  './Images/winBackground.png'
     app.lossBackgroundPath = './Images/lossBackground.png'
     app.cheesePath = './Images/cheese.png'
-    print(app.maze.list)
 
 def reset(app):
     app.playerLocation = [3, 2]
     app.catLocation = [0, 0]
     app.width = 600
     app.height = 600
-    app.rows = 5 #MAKE EACHS SQUARE SMALLER PLEEEEEEEEEEEEEEEEEEEEEEEEEEASE
+    app.rows = 5 
     app.cols = 5
-    app.maze = Maze(app.rows,app.cols) #ALIASED
-    app.maze.generateList()
-    app.maze.generateMaze([], (0,0))
-    app.path = specificCost(app.maze.list, tuple(app.catLocation), tuple(app.playerLocation))
-    app.paths = BFS(app.maze.list, tuple(app.catLocation))
+    app.maze1 = Maze(app.rows,app.cols)
+    app.maze2 = Maze(app.rows,app.cols)
+    app.maze3 = Maze(app.rows,app.cols)
+    app.maze4 = Maze(app.rows,app.cols)
+    app.maze5 = Maze(app.rows,app.cols)
+    app.maze6 = Maze(app.rows,app.cols)
+    mazeSetup(app.maze1)
+    mazeSetup(app.maze2)
+    mazeSetup(app.maze3)
+    mazeSetup(app.maze4)
+    mazeSetup(app.maze5)
+    mazeSetup(app.maze6)
+    app.maze1.surrounding = [app.maze3, app.maze2, app.maze6, app.maze4]
+    app.maze2.surrounding = [app.maze5, app.maze6, app.maze1, app.maze3]
+    app.maze3.surrounding = [app.maze5, app.maze2, app.maze1, app.maze4]
+    app.maze4.surrounding = [app.maze5, app.maze3, app.maze1, app.maze6]
+    app.maze5.surrounding = [app.maze6, app.maze2, app.maze3, app.maze4]
+    app.maze6.surrounding = [app.maze1, app.maze2, app.maze5, app.maze4]
+    app.possible6Surrounding = [[app.maze1, app.maze2, app.maze5, app.maze4],
+                                [app.maze5, app.maze4, app.maze1, app.maze2]]
+    app.mazeList = [app.maze1, app.maze2, app.maze3, app.maze4, app.maze5, app.maze6]
+    app.currMaze = app.maze3
+    app.newSurrounding = []
+    app.path = specificCost(app.currMaze.list, tuple(app.catLocation), tuple(app.playerLocation))
+    app.paths = BFS(app.currMaze.list, tuple(app.catLocation))
     app.screen = 'start' #start, game, controls, 2Player, loss, win
     app.stepsPerSecond = 0.75
     app.mouseRotation = 0
@@ -65,6 +102,10 @@ def reset(app):
     app.trueCheese = []
     app.collected = 0
     cheeseCoords(app)
+
+def mazeSetup(maze):
+    maze.generateList()
+    maze.generateMaze([],(0,0))
 
 def drawMaze(app, maze):
     for row in range(app.rows):
@@ -81,6 +122,24 @@ def drawMaze(app, maze):
             if(maze.list[row][col][3] == 1):
                 drawLine(150 + (100*col), 50 + (100*row),
                          150 + (100*col), 150 + (100*row))
+
+def getNum(bigList, startingRow, startingCol, endingRow, endingCol):
+    tempRow = None
+    tempList = []
+    result = []
+    for row in range(startingRow, endingRow+1):
+        for col in range(startingCol, endingCol+1):
+            if tempRow == None:
+                tempRow = row
+            if tempRow == row:
+                tempList.append(bigList[row][col])
+            elif tempRow != row:
+                result.append(tempList)
+                tempRow = row
+                tempList = []
+                tempList.append(bigList[row][col])
+    result.append(tempList)
+    return(result)
 
 def getCenter(coordinates):
     row, col = coordinates[0], coordinates[1]
@@ -105,54 +164,111 @@ def generateRandom(app):
     return (randomX, randomY)
 
 def onKeyPress(app, key):
+    temp = app.currMaze
     if key == 'r':
         reset(app)
     if app.screen == 'game':
         if (key == 'w'):
-            if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][2] == 0):
+            if (app.playerLocation[0]-1) < 0:
+                leftMaze = app.currMaze.surrounding[1]
+                rightMaze = app.currMaze.surrounding[3]
+                if leftMaze == app.maze6:
+                    leftMaze = app.possible6Surrounding[1]
+                    leftMaze.insert(0,leftMaze.pop())
+                else: leftMaze.surrounding.insert(0,leftMaze.surrounding.pop())
+                if rightMaze == app.maze6:
+                    rightMaze = app.possible6Surrounding[1]
+                    rightMaze.append(rightMaze.pop(0))
+                else: rightMaze.surrounding.append(rightMaze.surrounding.pop(0))
+                app.currMaze = temp.surrounding[2]
+                app.playerLocation[0] = 4
+                app.maze6.surrounding = app.possible6Surrounding[0]
+            elif(app.currMaze.list[app.playerLocation[0]][app.playerLocation[1]][2] == 0):
                 app.playerLocation[0] -= 1
                 app.mouseRotation = 0
         elif (key == 'a'):
-            if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][1] == 0):
+            if (app.playerLocation[1]-1) < 0:
+                topMaze = app.currMaze.surrounding[2]
+                bottomMaze = app.currMaze.surrounding[0]
+                if topMaze == app.maze6:
+                    topMaze = app.possible6Surrounding[0]
+                    topMaze.append(topMaze.pop(0))
+                else: topMaze.surrounding.append(topMaze.surrounding.pop(0))
+                if bottomMaze == app.maze6:
+                    bottomMaze = app.possible6Surrounding[0]
+                    bottomMaze.insert(0,bottomMaze.pop())
+                else: bottomMaze.surrounding.insert(0, bottomMaze.surrounding.pop())
+                app.currMaze = temp.surrounding[1]
+                app.maze6.surrounding = app.possible6Surrounding[1]
+                app.playerLocation[1] = 4
+            elif(app.currMaze.list[app.playerLocation[0]][app.playerLocation[1]][1] == 0):
                 app.playerLocation[1] -= 1
                 app.mouseRotation = 270
         elif (key == 's'):
-            if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][0] == 0):
+            if (app.playerLocation[0] + 1) > 4:
+                leftMaze = app.currMaze.surrounding[1]
+                rightMaze = app.currMaze.surrounding[3]
+                if leftMaze == app.maze6:
+                    leftMaze = app.possible6Surrounding[1]
+                    leftMaze.append(leftMaze.pop(0))
+                else: leftMaze.surrounding.append(leftMaze.surrounding.pop(0))
+                if rightMaze == app.maze6:
+                    rightMaze = app.possible6Surrounding[1]
+                    rightMaze.insert(0,rightMaze.pop())
+                else: rightMaze.surrounding.insert(0,rightMaze.surrounding.pop())
+                app.currMaze = temp.surrounding[0]
+                app.maze6.surrounding = app.possible6Surrounding[0]
+                app.playerLocation[0] = 0
+            elif(app.currMaze.list[app.playerLocation[0]][app.playerLocation[1]][0] == 0):
                 app.playerLocation[0] += 1
                 app.mouseRotation = 180
         elif (key == 'd'):
-            if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][3] == 0):
+            if (app.playerLocation[1] + 1) > 4:
+                topMaze = app.currMaze.surrounding[2]
+                bottomMaze = app.currMaze.surrounding[0]
+                if topMaze == app.maze6:
+                    topMaze = app.possible6Surrounding[0]
+                    topMaze.insert(0,topMaze.pop())
+                else: topMaze.surrounding.insert(0, topMaze.surrounding.pop())
+                if bottomMaze == app.maze6:
+                    bottomMaze = app.possible6Surrounding[0]
+                    bottomMaze.append(bottomMaze.pop(0))
+                else: bottomMaze.surrounding.append(bottomMaze.surrounding.pop(0))
+                app.currMaze = temp.surrounding[3]
+                app.maze6.surrounding = app.possible6Surrounding[1]
+                app.playerLocation[1] = 0
+            elif(app.currMaze.list[app.playerLocation[0]][app.playerLocation[1]][3] == 0):
                 app.playerLocation[1] += 1
                 app.mouseRotation = 90
     elif app.screen == '2Player':
         if key == 'w':
-            if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][2] == 0):
+            if(app.currMaze.list[app.playerLocation[0]][app.playerLocation[1]][2] == 0):
                 app.playerLocation[0] -= 1
                 app.mouseRotation = 0
         elif (key == 'a'):
-            if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][1] == 0):
+            if(app.currMaze.list[app.playerLocation[0]][app.playerLocation[1]][1] == 0):
                 app.playerLocation[1] -= 1
                 app.mouseRotation = 270
         elif (key == 's'):
-            if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][0] == 0):
+            if(app.currMaze.list[app.playerLocation[0]][app.playerLocation[1]][0] == 0):
                 app.playerLocation[0] += 1
                 app.mouseRotation = 180
         elif (key == 'd'):
-            if(app.maze.list[app.playerLocation[0]][app.playerLocation[1]][3] == 0):
+            if(app.currMaze.list[app.playerLocation[0]][app.playerLocation[1]][3] == 0):
                 app.playerLocation[1] += 1
                 app.mouseRotation = 90
 
         if key == 'up':
-            if(app.maze.list[app.catLocation[0]][app.catLocation[1]][2] == 0):
+            if(app.currMaze.list[app.catLocation[0]][app.catLocation[1]][2] == 0):
                 app.catLocation[0] -= 1
         elif key == 'down':
-            if(app.maze.list[app.catLocation[0]][app.catLocation[1]][0] == 0):
+            if(app.currMaze.list[app.catLocation[0]][app.catLocation[1]][0] == 0):
                 app.catLocation[0] += 1
         elif key == 'left':
-            if(app.maze.list[app.catLocation[0]][app.catLocation[1]][1] == 0):
+            if(app.currMaze.list[app.catLocation[0]][app.catLocation[1]][1] == 0):
                 app.catLocation[1] -= 1
         elif key == 'right':
-            if(app.maze.list[app.catLocation[0]][app.catLocation[1]][3] == 0):
+            if(app.currMaze.list[app.catLocation[0]][app.catLocation[1]][3] == 0):
                 app.catLocation[1] += 1
         if(app.playerLocation == app.catLocation):
             app.screen = 'loss'
@@ -174,8 +290,8 @@ def onStep(app):
         if app.catLocation == tuple(app.playerLocation):
             app.screen = 'loss'
         else:
-            app.path = specificCost(app.maze.list, tuple(app.catLocation), tuple(app.playerLocation))
-            app.paths = BFS(app.maze.list, tuple(app.catLocation))
+            app.path = specificCost(app.currMaze.list, tuple(app.catLocation), tuple(app.playerLocation))
+            app.paths = BFS(app.currMaze.list, tuple(app.catLocation))
             app.catLocation = app.path[0]
             if app.catLocation == tuple(app.playerLocation):
                 app.screen = 'loss'
@@ -229,7 +345,7 @@ def redrawAll(app):
     elif app.screen == 'game' or app.screen == '2Player':
         drawImage(app.backgroundPath, 0, 0, width = 600, height = 600)
         drawRect(50,50,500,500, fill='peru')
-        drawMaze(app, app.maze)
+        drawMaze(app, app.currMaze)
         playerCoords = getCenter(app.playerLocation)
         for coordinates in app.trueCheese:
             drawImage(app.cheesePath,*coordinates,width = 100, height = 100)
