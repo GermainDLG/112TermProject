@@ -148,25 +148,23 @@ def getCenter(coordinates):
 
 def cheeseCoords(app):
     for ___ in range(app.numCheese):
-        mazeNum = random.randint(0,5)
-        random = generateRandom(app)
+        random, mazeNum = generateRandom(app)
         centerX, centerY = getCenter(random)
-        while (centerX, centerY) in app.cheeseList[mazeNum]:
-            random = generateRandom(app)
-            centerX, centerY = getCenter(random)
         leftX = centerX - 50
         topY = centerY - 50
         if mazeNum not in app.cheeseList:
-            app.cheeseList[mazeNum] = (centerX, centerY)
-            app.trueCheese[mazeNum] = (leftX, topY)
+            app.cheeseList[mazeNum] = [(centerX, centerY)]
+            app.trueCheese[mazeNum] = [(leftX, topY)]
         else:
             app.cheeseList[mazeNum].append((centerX, centerY))
             app.trueCheese[mazeNum].append((leftX, topY))
+    print(app.cheeseList)
 
 def generateRandom(app):
     randomX = random.randint(0,app.rows-1)
     randomY = random.randint(0,app.cols-1)
-    return (randomX, randomY)
+    randomNum = random.randint(1,6)
+    return ((randomX, randomY), randomNum)
 
 def numAssigner(app, num):
     result = None
@@ -295,15 +293,22 @@ def onKeyPress(app, key):
             app.screen = 'loss'
     mazeKey = numAssigner(app, app.currMaze)
     for cheese in app.cheeseList[mazeKey]:
+        if mazeKey not in app.cheeseList:
+            continue
         if cheese == tuple(getCenter(app.playerLocation)):
-            index = app.cheeseList[key].index(cheese)
-            app.cheeseList[key].pop(index)
+            index = app.cheeseList[mazeKey].index(cheese)
+            app.cheeseList[mazeKey].pop(index)
             cheeseX, cheeseY = cheese
             cheeseX -= 50
             cheeseY -= 50
-            index = app.trueCheese.index((cheeseX, cheeseY))
-            app.trueCheese.pop(index)
+            index = app.trueCheese[mazeKey].index((cheeseX, cheeseY))
+            app.trueCheese[mazeKey].pop(index)
             app.collected += 1
+            print(app.cheeseList)
+            if app.screen == '2Player' and app.cheeseList[3] == []:
+                app.screen = 'win'
+                app.width = 600
+                app.height = 600
     if app.collected == app.numCheese:
         app.screen = 'win'
 
@@ -317,11 +322,15 @@ def onStep(app):
             app.catLocation = app.path[0]
             if app.catLocation == tuple(app.playerLocation):
                 app.screen = 'loss'
+                app.width = 600
+                app.height = 600
 
 def onMousePress(app, mouseX, mouseY):
     if app.screen == 'start':
         if (inStartBounds(app,mouseX,mouseY) == True):
             app.screen = 'game'
+            app.width = 700
+            app.height = 700
         elif (in2PlayerBounds(app,mouseX,mouseY) == True):
             app.screen = '2Player'
         elif(inControlBounds(app,mouseX,mouseY) == True):
@@ -332,6 +341,8 @@ def onMousePress(app, mouseX, mouseY):
     elif app.screen == 'game' or app.screen == '2Player':
         if(0 <= mouseX <= 50) and (0 <= mouseY <= 50):
             app.screen = 'start'
+            app.width = 600
+            app.height = 600
     elif app.screen == 'loss' or app.screen == 'win':
         if(inLossBounds(app,mouseX,mouseY) == True):
             app.screen = 'start'
@@ -353,6 +364,7 @@ def inLossBounds(app,mouseX,mouseY):
     return (150 <= mouseX <= 450) and (250 <= mouseY <= 350)
 
 def redrawAll(app): 
+    temp = numAssigner(app, app.currMaze)
     if app.screen == 'start':
         drawImage(app.startBackgroundPath,0, 0, width = 600, height = 600)
         drawLabel('Cat and Mouse',300,100,size = 60)
@@ -365,11 +377,11 @@ def redrawAll(app):
         drawLabel('Controls',300,487,size=20)
 
     elif app.screen == 'game' or app.screen == '2Player':
-        drawImage(app.backgroundPath, 0, 0, width = 600, height = 600)
+        drawImage(app.backgroundPath, 0, 0, width = 700, height = 700)
         drawRect(50,50,500,500, fill='peru')
         drawMaze(app, app.currMaze)
         playerCoords = getCenter(app.playerLocation)
-        for coordinates in app.trueCheese:
+        for coordinates in app.trueCheese[temp]:
             drawImage(app.cheesePath,*coordinates,width = 100, height = 100)
         for i in range(len(playerCoords)):
             playerCoords[i] -= 25
@@ -378,6 +390,7 @@ def redrawAll(app):
         for i in range(len(catCoords)):
             catCoords[i] -= 25
         drawImage(app.catPath, *catCoords, width = 50, height = 50)
+        #drawRect() DRAW 2D MAP HIGHLIGHTING WHICH FACE YOURE ON
 
     elif app.screen == 'controls':
         drawImage(app.controlsBackgroundPath,0,0, width = 600, height = 600)
@@ -396,7 +409,7 @@ def redrawAll(app):
         drawLabel('Objective:',447.5, 75, size = 30)
         drawLabel('Welcome to the game of Cat & Mouse!',448,115,size = 15)
         drawLabel('Your objective is simple:', 448, 140, size = 15)
-        drawLabel(' Collect 6 Cheese',448, 165, size=15, bold = True)
+        drawLabel(' Collect all the Cheese',448, 165, size=15, bold = True)
         drawLabel('Watch out though!',448, 190, size=15)
         drawLabel('If you get touched by the cat,',448,215,size=15)
         drawLabel('Its game over...',448,240,size = 15)

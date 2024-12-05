@@ -6,4 +6,10 @@ from collections import deque
 
 #     SANDBOX FOR TESTING
 
-randomNum = random.randint(0,5)
+
+l = [1,2,3,5]
+
+for i in range(6):
+    if i not in l:
+        continue
+    print(i)
