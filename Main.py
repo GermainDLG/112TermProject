@@ -46,9 +46,9 @@ def onAppStart(app):
     app.screen = 'start' #start, game, controls, 2Player, loss, win
     app.stepsPerSecond = 0.75
     app.mouseRotation = 0
-    app.numCheese = 6
-    app.cheeseList = []
-    app.trueCheese = []
+    app.numCheese = 30
+    app.cheeseList = dict()
+    app.trueCheese = dict()
     app.collected = 0
     cheeseCoords(app)
 
@@ -97,9 +97,9 @@ def reset(app):
     app.screen = 'start' #start, game, controls, 2Player, loss, win
     app.stepsPerSecond = 0.75
     app.mouseRotation = 0
-    app.numCheese = 6
-    app.cheeseList = []
-    app.trueCheese = []
+    app.numCheese = 30
+    app.cheeseList = dict()
+    app.trueCheese = dict()
     app.collected = 0
     cheeseCoords(app)
 
@@ -148,20 +148,41 @@ def getCenter(coordinates):
 
 def cheeseCoords(app):
     for ___ in range(app.numCheese):
+        mazeNum = random.randint(0,5)
         random = generateRandom(app)
         centerX, centerY = getCenter(random)
-        while (centerX, centerY) in app.cheeseList:
+        while (centerX, centerY) in app.cheeseList[mazeNum]:
             random = generateRandom(app)
             centerX, centerY = getCenter(random)
         leftX = centerX - 50
         topY = centerY - 50
-        app.cheeseList.append((centerX, centerY))
-        app.trueCheese.append((leftX, topY))
+        if mazeNum not in app.cheeseList:
+            app.cheeseList[mazeNum] = (centerX, centerY)
+            app.trueCheese[mazeNum] = (leftX, topY)
+        else:
+            app.cheeseList[mazeNum].append((centerX, centerY))
+            app.trueCheese[mazeNum].append((leftX, topY))
 
 def generateRandom(app):
     randomX = random.randint(0,app.rows-1)
     randomY = random.randint(0,app.cols-1)
     return (randomX, randomY)
+
+def numAssigner(app, num):
+    result = None
+    if num == app.maze1:
+        result = 1
+    elif num == app.maze2:
+        result = 2
+    elif num == app.maze3:
+        result = 3
+    elif num == app.maze4:
+        result = 4
+    elif num == app.maze5:
+        result = 5
+    elif num == app.maze6:
+        result = 6
+    return result
 
 def onKeyPress(app, key):
     temp = app.currMaze
@@ -272,10 +293,11 @@ def onKeyPress(app, key):
                 app.catLocation[1] += 1
         if(app.playerLocation == app.catLocation):
             app.screen = 'loss'
-    for cheese in app.cheeseList:
+    mazeKey = numAssigner(app, app.currMaze)
+    for cheese in app.cheeseList[mazeKey]:
         if cheese == tuple(getCenter(app.playerLocation)):
-            index = app.cheeseList.index(cheese)
-            app.cheeseList.pop(index)
+            index = app.cheeseList[key].index(cheese)
+            app.cheeseList[key].pop(index)
             cheeseX, cheeseY = cheese
             cheeseX -= 50
             cheeseY -= 50
