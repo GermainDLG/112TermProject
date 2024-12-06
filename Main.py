@@ -356,6 +356,13 @@ def onMousePress(app, mouseX, mouseY):
             app.height = 700
         elif(inControlBounds(app,mouseX,mouseY) == True):
             app.screen = 'controls'
+        elif(inDifficultyBounds(app,mouseX,mouseY) == True):
+            if(app.stepsPerSecond == 1):
+                app.stepsPerSecond = 1.25
+            elif(app.stepsPerSecond == 1.25):
+                app.stepsPerSecond = 0.75
+            elif(app.stepsPerSecond == 0.75):
+                app.stepsPerSecond = 1
     elif app.screen == 'controls':
         if (inControlsBackBounds(app,mouseX,mouseY) == True):
             app.screen = 'start'
@@ -384,8 +391,12 @@ def inControlBounds(app, mouseX, mouseY):
 def inLossBounds(app,mouseX,mouseY):
     return (150 <= mouseX <= 450) and (250 <= mouseY <= 350)
 
+def inDifficultyBounds(app,mouseX,mouseY):
+    return (35 <= mouseX <= 135) and (450 <= mouseY <550)
+
 def redrawAll(app): 
     temp = numAssigner(app, app.currMaze)
+    diffFill = None
     if app.screen == 'start':
         drawImage(app.startBackgroundPath,0, 0, width = 600, height = 600)
         drawLabel('Cat and Mouse',300,100,size = 60, font = 'Fontdiner Swanky')
@@ -396,6 +407,17 @@ def redrawAll(app):
         drawLabel('2 Player',300,387, size = 20, font = 'Fontdiner Swanky')
         drawRect(200,450,200,75,fill= 'crimson', border = 'black')
         drawLabel('Controls',300,487,size=20, font = 'Fontdiner Swanky')
+        if(app.stepsPerSecond == 1.25):
+            diffFill = 'red'
+            difficulty = 'hard'
+        elif(app.stepsPerSecond == 1):
+            diffFill = 'gold'
+            difficulty = 'medium'
+        elif(app.stepsPerSecond == 0.75):
+            diffFill = 'limeGreen'
+            difficulty = 'easy'
+        drawRect(35,450,100,100,fill = diffFill,border = 'black')
+        drawLabel(difficulty,85,500,size = 22, font = 'Fontdiner Swanky')
 
     elif app.screen == 'game' or app.screen == '2Player':
         drawImage(app.backgroundPath, 0, 0, width = 700, height = 700)
