@@ -158,7 +158,6 @@ def cheeseCoords(app):
         else:
             app.cheeseList[mazeNum].append((centerX, centerY))
             app.trueCheese[mazeNum].append((leftX, topY))
-    print(app.cheeseList)
 
 def generateRandom(app):
     randomX = random.randint(0,app.rows-1)
@@ -184,6 +183,7 @@ def numAssigner(app, num):
 
 def onKeyPress(app, key):
     temp = app.currMaze
+    tempNum = numAssigner(app, temp)
     if key == 'r':
         reset(app)
     if app.screen == 'game':
@@ -292,19 +292,19 @@ def onKeyPress(app, key):
             if(app.currMaze.list[app.playerLocation[0]][app.playerLocation[1]][3] == 0):
                 app.playerLocation[1] += 1
                 app.mouseRotation = 90
-
+        catX, catY = app.catLocation
         if key == 'up':
             if(app.currMaze.list[app.catLocation[0]][app.catLocation[1]][2] == 0):
-                app.catLocation[0] -= 1
+                app.catLocation = (catX-1, catY)
         elif key == 'down':
             if(app.currMaze.list[app.catLocation[0]][app.catLocation[1]][0] == 0):
-                app.catLocation[0] += 1
+                app.catLocation = (catX + 1, catY)
         elif key == 'left':
             if(app.currMaze.list[app.catLocation[0]][app.catLocation[1]][1] == 0):
-                app.catLocation[1] -= 1
+                app.catLocation = (catX, catY - 1)
         elif key == 'right':
             if(app.currMaze.list[app.catLocation[0]][app.catLocation[1]][3] == 0):
-                app.catLocation[1] += 1
+                app.catLocation = (catX, catY + 1)
         if(app.playerLocation == app.catLocation):
             app.screen = 'loss'
             app.height = 600
@@ -322,7 +322,6 @@ def onKeyPress(app, key):
             index = app.trueCheese[mazeKey].index((cheeseX, cheeseY))
             app.trueCheese[mazeKey].pop(index)
             app.collected += 1
-            print(app.cheeseList)
             if app.screen == '2Player' and app.cheeseList[3] == []:
                 app.screen = 'win'
                 app.width = 600
