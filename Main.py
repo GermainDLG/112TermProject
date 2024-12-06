@@ -305,7 +305,7 @@ def onKeyPress(app, key):
         elif key == 'right':
             if(app.currMaze.list[app.catLocation[0]][app.catLocation[1]][3] == 0):
                 app.catLocation = (catX, catY + 1)
-        if(app.playerLocation == app.catLocation):
+        if tuple(app.playerLocation) == tuple(app.catLocation):
             app.screen = 'loss'
             app.height = 600
             app.width = 600
@@ -323,6 +323,10 @@ def onKeyPress(app, key):
             app.trueCheese[mazeKey].pop(index)
             app.collected += 1
             if app.screen == '2Player' and app.cheeseList[3] == []:
+                app.screen = 'win'
+                app.width = 600
+                app.height = 600
+            elif(app.screen == 'game') and app.collected == app.numCheese:
                 app.screen = 'win'
                 app.width = 600
                 app.height = 600
@@ -473,7 +477,7 @@ def redrawAll(app):
         drawLabel('Its game over...',448,240,size = 14, font = 'Fontdiner Swanky')
         drawLabel('Have fun!!',448, 265, size = 14, font = 'Fontdiner Swanky')
         drawLabel('(PS. You might want to try', 448, 290, size = 14, font = 'Fontdiner Swanky')
-        drawLabel('and sneak UNDER the mouse)', 448, 315, size = 14, font = 'Fontdiner Swanky')
+        drawLabel('and sneak UNDER the cat)', 448, 315, size = 14, font = 'Fontdiner Swanky')
 
     elif app.screen == 'loss':
         drawImage(app.lossBackgroundPath,0,0,width = 600, height = 600)
