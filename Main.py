@@ -150,8 +150,8 @@ def cheeseCoords(app):
     for ___ in range(app.numCheese):
         random, mazeNum = generateRandom(app)
         centerX, centerY = getCenter(random)
-        leftX = centerX - 50
-        topY = centerY - 50
+        leftX = centerX - 25
+        topY = centerY - 25
         if mazeNum not in app.cheeseList:
             app.cheeseList[mazeNum] = [(centerX, centerY)]
             app.trueCheese[mazeNum] = [(leftX, topY)]
@@ -201,6 +201,10 @@ def onKeyPress(app, key):
                 else: rightMaze.surrounding.append(rightMaze.surrounding.pop(0))
                 app.currMaze = temp.surrounding[2]
                 app.playerLocation[0] = 4
+                catX, catY = app.catLocation
+                app.catLocation = (4, catY)
+                if app.catLocation == tuple(app.playerLocation):
+                    app.playerLocation[0] = 3
                 app.maze6.surrounding = app.possible6Surrounding[0]
             elif(app.currMaze.list[app.playerLocation[0]][app.playerLocation[1]][2] == 0):
                 app.playerLocation[0] -= 1
@@ -220,6 +224,10 @@ def onKeyPress(app, key):
                 app.currMaze = temp.surrounding[1]
                 app.maze6.surrounding = app.possible6Surrounding[1]
                 app.playerLocation[1] = 4
+                catX, catY = app.catLocation
+                app.catLocation = (catX, 4)
+                if app.catLocation == tuple(app.playerLocation):
+                    app.playerLocation[1] = 3
             elif(app.currMaze.list[app.playerLocation[0]][app.playerLocation[1]][1] == 0):
                 app.playerLocation[1] -= 1
                 app.mouseRotation = 270
@@ -238,6 +246,10 @@ def onKeyPress(app, key):
                 app.currMaze = temp.surrounding[0]
                 app.maze6.surrounding = app.possible6Surrounding[0]
                 app.playerLocation[0] = 0
+                catX, catY = app.catLocation
+                app.catLocation = (0, catY)
+                if app.catLocation == tuple(app.playerLocation):
+                    app.playerLocation[0] = 1
             elif(app.currMaze.list[app.playerLocation[0]][app.playerLocation[1]][0] == 0):
                 app.playerLocation[0] += 1
                 app.mouseRotation = 180
@@ -256,6 +268,10 @@ def onKeyPress(app, key):
                 app.currMaze = temp.surrounding[3]
                 app.maze6.surrounding = app.possible6Surrounding[1]
                 app.playerLocation[1] = 0
+                catX, catY = app.catLocation
+                app.catLocation = (catX, 0)
+                if app.catLocation == tuple(app.playerLocation):
+                    app.playerLocation[1] = 1
             elif(app.currMaze.list[app.playerLocation[0]][app.playerLocation[1]][3] == 0):
                 app.playerLocation[1] += 1
                 app.mouseRotation = 90
@@ -291,6 +307,8 @@ def onKeyPress(app, key):
                 app.catLocation[1] += 1
         if(app.playerLocation == app.catLocation):
             app.screen = 'loss'
+            app.height = 600
+            app.width = 600
     mazeKey = numAssigner(app, app.currMaze)
     for cheese in app.cheeseList[mazeKey]:
         if mazeKey not in app.cheeseList:
@@ -299,8 +317,8 @@ def onKeyPress(app, key):
             index = app.cheeseList[mazeKey].index(cheese)
             app.cheeseList[mazeKey].pop(index)
             cheeseX, cheeseY = cheese
-            cheeseX -= 50
-            cheeseY -= 50
+            cheeseX -= 25
+            cheeseY -= 25
             index = app.trueCheese[mazeKey].index((cheeseX, cheeseY))
             app.trueCheese[mazeKey].pop(index)
             app.collected += 1
@@ -316,6 +334,8 @@ def onStep(app):
     if app.screen == 'game':
         if app.catLocation == tuple(app.playerLocation):
             app.screen = 'loss'
+            app.width = 600
+            app.height = 600
         else:
             app.path = specificCost(app.currMaze.list, tuple(app.catLocation), tuple(app.playerLocation))
             app.paths = BFS(app.currMaze.list, tuple(app.catLocation))
@@ -333,6 +353,8 @@ def onMousePress(app, mouseX, mouseY):
             app.height = 700
         elif (in2PlayerBounds(app,mouseX,mouseY) == True):
             app.screen = '2Player'
+            app.width = 700
+            app.height = 700
         elif(inControlBounds(app,mouseX,mouseY) == True):
             app.screen = 'controls'
     elif app.screen == 'controls':
@@ -367,14 +389,14 @@ def redrawAll(app):
     temp = numAssigner(app, app.currMaze)
     if app.screen == 'start':
         drawImage(app.startBackgroundPath,0, 0, width = 600, height = 600)
-        drawLabel('Cat and Mouse',300,100,size = 60)
-        drawLabel('Around the World',300,155,size = 35)
+        drawLabel('Cat and Mouse',300,100,size = 60, font = 'Fontdiner Swanky')
+        drawLabel('Around the World',300,155,size = 35, font = 'Fontdiner Swanky')
         drawRect(150,250,300,75, fill = 'skyBlue', border = 'black')
-        drawLabel('Start',300,287, size = 30)
+        drawLabel('Start',300,287, size = 30, font = 'Fontdiner Swanky')
         drawRect(175,350,250,75, fill = 'lightGreen', border = 'black')
-        drawLabel('2 Player',300,387, size = 20)
+        drawLabel('2 Player',300,387, size = 20, font = 'Fontdiner Swanky')
         drawRect(200,450,200,75,fill= 'crimson', border = 'black')
-        drawLabel('Controls',300,487,size=20)
+        drawLabel('Controls',300,487,size=20, font = 'Fontdiner Swanky')
 
     elif app.screen == 'game' or app.screen == '2Player':
         drawImage(app.backgroundPath, 0, 0, width = 700, height = 700)
@@ -382,7 +404,7 @@ def redrawAll(app):
         drawMaze(app, app.currMaze)
         playerCoords = getCenter(app.playerLocation)
         for coordinates in app.trueCheese[temp]:
-            drawImage(app.cheesePath,*coordinates,width = 100, height = 100)
+            drawImage(app.cheesePath,*coordinates,width = 50, height = 50)
         for i in range(len(playerCoords)):
             playerCoords[i] -= 25
         drawImage(app.mousePath, *playerCoords, width = 50, height = 50, rotateAngle = app.mouseRotation)
@@ -390,44 +412,59 @@ def redrawAll(app):
         for i in range(len(catCoords)):
             catCoords[i] -= 25
         drawImage(app.catPath, *catCoords, width = 50, height = 50)
-        #drawRect() DRAW 2D MAP HIGHLIGHTING WHICH FACE YOURE ON
+        if temp == 1: drawRect(575,510,40,40,fill='red', border = 'black') #Face 1
+        elif temp == 2: drawRect(530,555,40,40,fill='red', border = 'black') #Face 2
+        elif temp == 3: drawRect(575,555,40,40,fill='red', border = 'black') #Face 3
+        elif temp == 4: drawRect(620,555,40,40,fill='red', border = 'black') #Face 4
+        elif temp == 5: drawRect(575,600,40,40,fill='red', border = 'black') #Face 5
+        elif temp == 6: drawRect(575,645,40,40,fill='red', border = 'black') #Face 6
+        drawRect(575,510,40,40,fill=None, border = 'black') #Face 1
+        drawRect(530,555,40,40,fill=None, border = 'black') #Face 2
+        drawRect(575,555,40,40,fill=None, border = 'black') #Face 3
+        drawRect(620,555,40,40,fill=None, border = 'black') #Face 4
+        drawRect(575,600,40,40,fill=None, border = 'black') #Face 5
+        drawRect(575,645,40,40,fill=None, border = 'black') #Face 6
+        if app.screen == 'game':
+            drawLabel(f'Cheese Left: {30-app.collected}',200,595,size = 25,font = 'Fontdiner Swanky')
+        elif app.screen == '2Player':
+            drawLabel(f'Cheese Left: {len(app.trueCheese[temp])}',200,595,size = 25,font = 'Fontdiner Swanky')
 
     elif app.screen == 'controls':
         drawImage(app.controlsBackgroundPath,0,0, width = 600, height = 600)
         drawRect(200,500,200,50,fill='beige',border = 'black')
-        drawLabel('Back',300,525,size=20)
+        drawLabel('Back',300,525,size=20, font = 'Fontdiner Swanky')
         drawRect(25,50,275, 334, fill = 'beige', border = 'black')
         drawRect(310,50,275,334, fill = 'beige', border = 'black')
-        drawLabel('W',63,88, size = 30)
-        drawLabel('A', 63, 174, size = 30)
-        drawLabel('S', 63, 260, size = 30)
-        drawLabel('D', 63, 346, size = 30)
-        drawLabel('Moves the mouse up', 200, 88, size = 16)
-        drawLabel('Moves the mouse left',200,174, size = 16)
-        drawLabel('Moves the mouse down',200,260, size = 16)
-        drawLabel('Moves the mouse right', 200, 346, size = 16)
-        drawLabel('Objective:',447.5, 75, size = 30)
-        drawLabel('Welcome to the game of Cat & Mouse!',448,115,size = 15)
-        drawLabel('Your objective is simple:', 448, 140, size = 15)
-        drawLabel(' Collect all the Cheese',448, 165, size=15, bold = True)
-        drawLabel('Watch out though!',448, 190, size=15)
-        drawLabel('If you get touched by the cat,',448,215,size=15)
-        drawLabel('Its game over...',448,240,size = 15)
-        drawLabel('Have fun!!',448, 265, size = 15)
-        drawLabel('(PS. You might want to try', 448, 290, size = 15)
-        drawLabel('and sneak UNDER the mouse)', 448, 315, size = 15)
+        drawLabel('W',63,88, size = 30, font = 'Fontdiner Swanky')
+        drawLabel('A', 63, 174, size = 30, font = 'Fontdiner Swanky')
+        drawLabel('S', 63, 260, size = 30, font = 'Fontdiner Swanky')
+        drawLabel('D', 63, 346, size = 30, font = 'Fontdiner Swanky')
+        drawLabel('Moves the mouse up', 200, 88, size = 15, font = 'Fontdiner Swanky')
+        drawLabel('Moves the mouse left',200,174, size = 15, font = 'Fontdiner Swanky')
+        drawLabel('Moves the mouse down',200,260, size = 15, font = 'Fontdiner Swanky')
+        drawLabel('Moves the mouse right', 200, 346, size = 15, font = 'Fontdiner Swanky')
+        drawLabel('Objective:',447.5, 75, size = 30, font = 'Fontdiner Swanky')
+        drawLabel('Welcome to the game of Cat & Mouse!',448,115,size = 13, font = 'Fontdiner Swanky')
+        drawLabel('Your objective is simple:', 448, 140, size = 14, font = 'Fontdiner Swanky')
+        drawLabel(' Collect all the Cheese',448, 165, size=14, bold = True, font = 'Fontdiner Swanky')
+        drawLabel('Watch out though!',448, 190, size=14, font = 'Fontdiner Swanky')
+        drawLabel('If you get touched by the cat,',448,215,size=14, font = 'Fontdiner Swanky')
+        drawLabel('Its game over...',448,240,size = 14, font = 'Fontdiner Swanky')
+        drawLabel('Have fun!!',448, 265, size = 14, font = 'Fontdiner Swanky')
+        drawLabel('(PS. You might want to try', 448, 290, size = 14, font = 'Fontdiner Swanky')
+        drawLabel('and sneak UNDER the mouse)', 448, 315, size = 14, font = 'Fontdiner Swanky')
 
     elif app.screen == 'loss':
         drawImage(app.lossBackgroundPath,0,0,width = 600, height = 600)
         drawRect(150,250,300,100,fill='beige', border='black')
-        drawLabel('The Cat Caught You :(', 300,100,size=50, bold = True)
-        drawLabel('Try Again?',300,300, size = 30)
+        drawLabel('The Cat Caught You :(', 300,100,size=45, bold = True, font = 'Fontdiner Swanky')
+        drawLabel('Try Again?',300,300, size = 30, font = 'Fontdiner Swanky')
 
     elif app.screen == 'win':
         drawImage(app.winBackgroundPath,0,0,width = 600, height = 600)
         drawRect(150,250,300,100,fill='beige', border='black')
-        drawLabel('You Got All The Cheese!', 300,150,size=50, bold = True)
-        drawLabel('Go Again??',300,300, size = 30)
+        drawLabel('You Got All The Cheese!', 300,150,size=40, bold = True, font = 'Fontdiner Swanky')
+        drawLabel('Go Again??',300,300, size = 30, font = 'Fontdiner Swanky')
 
 def main():
 
