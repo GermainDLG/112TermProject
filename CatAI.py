@@ -2,7 +2,7 @@ from cmu_graphics import *
 from collections import deque
 import copy
 from Other_Maze import Maze
-# deque info from: https://www.geeksforgeeks.org/queue-in-python/
+# deque learning from: https://www.geeksforgeeks.org/queue-in-python/
 # BFS learning from: https://www.youtube.com/watch?v=T_m27bhVQQQ
 
 def specificCost(maze, currPos, goalPos):
